@@ -46,27 +46,8 @@ function AppContent() {
     return <BakeComplete />;
   }
 
-  // Default: setup with bottom nav
-  return (
-    <div className="relative">
-      <SetupWizard />
-      {/* Bottom navigation pills */}
-      <div className="fixed bottom-20 left-0 right-0 flex justify-center gap-2 px-4">
-        <NavPill onClick={() => setOverlay('advisor')} label="Bakadvies" />
-        <NavPill onClick={() => setOverlay('inventory')} label="Voorraad" />
-        <NavPill onClick={() => setOverlay('history')} label="Logboek" />
-      </div>
-    </div>
-  );
-}
-
-function NavPill({ onClick, label }: { onClick: () => void; label: string }) {
-  return (
-    <button onClick={onClick}
-      className="px-4 py-2.5 bg-white/90 backdrop-blur-xl border border-warm-200 rounded-full text-xs font-semibold text-warm-600 shadow-[var(--shadow-card)] hover:border-bread-300 hover:text-bread-600 transition-all">
-      {label}
-    </button>
-  );
+  // Default: setup
+  return <SetupWizard onNavigate={setOverlay} />;
 }
 
 export default function App() {

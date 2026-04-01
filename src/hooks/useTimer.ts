@@ -3,58 +3,44 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 interface TimerState {
   remainingMs: number;
   elapsedMs: number;
-  progress: number; // 0-1
+  progress: number;
   isComplete: boolean;
+  justCompleted: boolean; // true on the tick when it first completes
   formatted: string;
 }
 
-/**
- * Countdown hook based on absolute timestamps.
- * Survives backgrounding via visibilitychange recalculation.
- */
 export function useTimer(targetTime: number | null, totalDurationMs: number): TimerState {
+  const wasCompleteRef = useRef(false);
+
   const calculate = useCallback((): TimerState => {
     if (!targetTime) {
-      return { remainingMs: 0, elapsedMs: 0, progress: 0, isComplete: false, formatted: '--' };
+      return { remainingMs: 0, elapsedMs: 0, progress: 0, isComplete: false, justCompleted: false, formatted: '--' };
     }
-
     const now = Date.now();
     const remaining = Math.max(0, targetTime - now);
     const elapsed = totalDurationMs - remaining;
     const progress = totalDurationMs > 0 ? Math.min(1, elapsed / totalDurationMs) : 0;
     const isComplete = remaining <= 0;
+    const justCompleted = isComplete && !wasCompleteRef.current;
 
-    return {
-      remainingMs: remaining,
-      elapsedMs: elapsed,
-      progress,
-      isComplete,
-      formatted: formatDuration(remaining),
-    };
+    if (isComplete) wasCompleteRef.current = true;
+
+    return { remainingMs: remaining, elapsedMs: elapsed, progress, isComplete, justCompleted, formatted: formatDuration(remaining) };
   }, [targetTime, totalDurationMs]);
 
   const [state, setState] = useState(calculate);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    wasCompleteRef.current = false; // Reset on new target
+  }, [targetTime]);
 
   useEffect(() => {
     if (!targetTime) return;
-
-    // Update every second
     setState(calculate());
-    intervalRef.current = setInterval(() => setState(calculate()), 1000);
-
-    // Recalculate on visibility change (phone screen on/off)
-    const onVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        setState(calculate());
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
+    const interval = setInterval(() => setState(calculate()), 1000);
+    const onVis = () => { if (document.visibilityState === 'visible') setState(calculate()); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => { clearInterval(interval); document.removeEventListener('visibilitychange', onVis); };
   }, [targetTime, calculate]);
 
   return state;
@@ -62,13 +48,11 @@ export function useTimer(targetTime: number | null, totalDurationMs: number): Ti
 
 function formatDuration(ms: number): string {
   if (ms <= 0) return 'Klaar!';
-
   const totalSeconds = Math.ceil(ms / 1000);
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-
-  if (hours > 0) return `${hours}u ${minutes}m`;
-  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  if (hours > 0) return `${hours}u ${String(minutes).padStart(2, '0')}m`;
+  if (minutes > 0) return `${minutes}m ${String(seconds).padStart(2, '0')}s`;
   return `${seconds}s`;
 }

@@ -1,14 +1,34 @@
 import { useBread } from '@/context/BreadContext';
 import { useTimer } from '@/hooks/useTimer';
+import { useNotification } from '@/hooks/useNotification';
 import { getStageDefinition } from '@/models/stages';
 import { scienceContent } from '@/data/scienceContent';
 import { getStepRecipeInfo } from '@/data/stepRecipeInfo';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function StepCard() {
   const { process, currentStage, currentEndTime, dispatch } = useBread();
   const timer = useTimer(currentEndTime, currentStage?.calculatedDurationMs ?? 0);
+  const { playAlarm, stopAlarm, requestPermission, permission } = useNotification();
   const [showScience, setShowScience] = useState(false);
+
+  // Request notification permission on first render
+  useEffect(() => {
+    if (permission === 'default') requestPermission();
+  }, [permission, requestPermission]);
+
+  // Play alarm when timer completes
+  useEffect(() => {
+    if (timer.justCompleted) {
+      playAlarm();
+    }
+  }, [timer.justCompleted, playAlarm]);
+
+  // Stop alarm when moving to next step
+  const handleNextStep = () => {
+    stopAlarm();
+    dispatch({ type: 'NEXT_STEP' });
+  };
 
   if (!process || !currentStage) {
     return (
@@ -206,7 +226,7 @@ export function StepCard() {
 
         {/* Next button */}
         <div className="pt-2 pb-8">
-          <button onClick={() => dispatch({ type: 'NEXT_STEP' })}
+          <button onClick={handleNextStep}
             className={`w-full py-4 rounded-2xl font-bold text-base transition-all shadow-[var(--shadow-button)] ${
               timer.isComplete
                 ? 'bg-gradient-to-r from-bread-500 to-bread-600 text-white hover:from-bread-600 hover:to-bread-700'
