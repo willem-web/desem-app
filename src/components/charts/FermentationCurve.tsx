@@ -13,7 +13,6 @@ export function FermentationCurve() {
   const target = targetRisePercent(process.config.roomTempC);
   const data = generateRiseCurve(totalMin, target, Math.max(10, totalMin / 30));
 
-  // Current progress through bulk
   const elapsedMin = currentStage?.id === 'bulk'
     ? (Date.now() - bulkStage.startTime) / 60000
     : bulkStage.completedAt
@@ -21,21 +20,21 @@ export function FermentationCurve() {
       : 0;
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-4">
-      <h3 className="font-semibold text-stone-800 mb-1">Fermentatiecurve</h3>
-      <p className="text-xs text-stone-500 mb-3">
+    <div className="card">
+      <h3 className="font-semibold text-warm-800 mb-1 text-[15px]">Fermentatiecurve</h3>
+      <p className="text-[13px] text-warm-400 mb-4">
         Geschatte volumetoename tijdens bulkfermentatie (doelrijs: {Math.round(target)}%)
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#D0D4DE" />
           <XAxis
             dataKey="timeMinutes"
             tickFormatter={v => `${Math.round(v / 60)}u`}
-            tick={{ fontSize: 11, fill: '#78716c' }}
+            tick={{ fontSize: 11, fill: '#8890A6' }}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: '#78716c' }}
+            tick={{ fontSize: 11, fill: '#8890A6' }}
             tickFormatter={v => `${v}%`}
             domain={[0, Math.ceil(target / 10) * 10 + 10]}
           />
@@ -45,23 +44,23 @@ export function FermentationCurve() {
           />
           <defs>
             <linearGradient id="riseGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="#FAB755" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#FAB755" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <Area
             type="monotone"
             dataKey="risePercent"
-            stroke="#d97706"
+            stroke="#C6822A"
             strokeWidth={2}
             fill="url(#riseGradient)"
           />
           {elapsedMin > 0 && elapsedMin < totalMin && (
             <ReferenceLine
               x={Math.round(elapsedMin)}
-              stroke="#dc2626"
+              stroke="#7A6F37"
               strokeDasharray="4 4"
-              label={{ value: 'Nu', position: 'top', fontSize: 11, fill: '#dc2626' }}
+              label={{ value: 'Nu', position: 'top', fontSize: 11, fill: '#7A6F37' }}
             />
           )}
         </AreaChart>

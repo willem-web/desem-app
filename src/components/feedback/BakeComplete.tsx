@@ -50,26 +50,25 @@ export function BakeComplete() {
     dispatch({ type: 'RESET' });
   };
 
-  // Gather applicable tips
   const tips = Object.entries(improvementTips).flatMap(([_, rules]) =>
     rules.filter(r => r.condition(scores)).map(r => r.tip)
   );
 
   if (saved) {
     return (
-      <div className="p-4 space-y-4">
-        <div className="text-center py-8">
-          <div className="text-4xl mb-4">&#127838;</div>
-          <h2 className="text-xl font-bold text-amber-800">Opgeslagen!</h2>
-          <p className="text-stone-500 mt-2">Je baksessie is opgeslagen in je baklogboek.</p>
+      <div className="p-6 space-y-5">
+        <div className="text-center py-10">
+          <div className="text-5xl mb-5">&#127838;</div>
+          <h2 className="text-2xl font-bold text-warm-800">Opgeslagen!</h2>
+          <p className="text-warm-400 mt-3 leading-relaxed">Je baksessie is opgeslagen in je baklogboek.</p>
         </div>
 
         {tips.length > 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <h3 className="font-semibold text-amber-800 mb-2">Verbeteradviezen</h3>
-            <ul className="space-y-1.5">
+          <div className="card bg-bread-50 border-bread-200">
+            <h3 className="font-semibold text-bread-700 mb-3 text-[15px]">Verbeteradviezen</h3>
+            <ul className="space-y-2.5">
               {tips.map((tip, i) => (
-                <li key={i} className="text-sm text-amber-700 flex gap-2">
+                <li key={i} className="text-[13px] text-bread-600 flex gap-2.5">
                   <span>&#128161;</span>{tip}
                 </li>
               ))}
@@ -79,7 +78,7 @@ export function BakeComplete() {
 
         <button
           onClick={handleFinish}
-          className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold hover:bg-amber-700"
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-olive-500 to-olive-600 text-white font-bold text-base shadow-[var(--shadow-button)]"
         >
           Terug naar start
         </button>
@@ -88,11 +87,11 @@ export function BakeComplete() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="text-center py-4">
-        <div className="text-3xl mb-2">&#127838;</div>
-        <h2 className="text-xl font-bold text-amber-800">Bakproces voltooid!</h2>
-        <p className="text-stone-500 text-sm mt-1">Beoordeel je resultaat voor je baklogboek.</p>
+    <div className="p-6 space-y-5">
+      <div className="text-center py-6">
+        <div className="text-4xl mb-3">&#127838;</div>
+        <h2 className="text-2xl font-bold text-warm-800">Bakproces voltooid!</h2>
+        <p className="text-warm-400 mt-2">Beoordeel je resultaat voor je baklogboek.</p>
       </div>
 
       {/* Score inputs */}
@@ -103,25 +102,25 @@ export function BakeComplete() {
         ['ovenspring', 'Ovenspring', 'Volume, ear, scoring'],
         ['overall', 'Totaal', 'Algemene tevredenheid'],
       ] as const).map(([key, label, desc]) => (
-        <div key={key} className="bg-white rounded-xl border border-stone-200 p-4">
-          <div className="flex justify-between items-baseline mb-2">
+        <div key={key} className="card">
+          <div className="flex justify-between items-baseline mb-3">
             <div>
-              <span className="font-medium text-stone-800">{label}</span>
-              <span className="text-xs text-stone-400 ml-2">{desc}</span>
+              <span className="font-semibold text-warm-800 text-[15px]">{label}</span>
+              <span className="text-[12px] text-warm-400 ml-2">{desc}</span>
             </div>
-            <span className="text-xs text-stone-500">{scoreLabels[scores[key]]}</span>
+            <span className="text-[12px] text-warm-500 font-medium">{scoreLabels[scores[key]]}</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             {([1, 2, 3, 4, 5] as BakeScore[]).map(val => (
               <button
                 key={val}
                 onClick={() => updateScore(key, val)}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   scores[key] === val
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-bread-400 text-white shadow-sm'
                     : scores[key] >= val
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-stone-100 text-stone-400'
+                      ? 'bg-bread-100 text-bread-600'
+                      : 'bg-warm-100 text-warm-400'
                 }`}
               >
                 {val}
@@ -132,19 +131,19 @@ export function BakeComplete() {
       ))}
 
       {/* Notes */}
-      <div className="bg-white rounded-xl border border-stone-200 p-4">
-        <label className="block font-medium text-stone-800 mb-2">Notities</label>
+      <div className="card">
+        <label className="block font-semibold text-warm-800 mb-3 text-[15px]">Notities</label>
         <textarea
           value={notes}
           onChange={e => setNotes(e.target.value)}
           placeholder="Wat viel je op? Tips voor volgende keer?"
-          className="w-full h-24 p-3 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:border-amber-400"
+          className="w-full h-28 p-4 border border-warm-200 rounded-2xl text-[14px] resize-none"
         />
       </div>
 
       <button
         onClick={handleSave}
-        className="w-full py-4 rounded-xl bg-amber-600 text-white font-bold text-lg hover:bg-amber-700"
+        className="w-full py-4.5 rounded-2xl bg-gradient-to-r from-bread-400 to-bread-500 text-white font-bold text-lg shadow-[var(--shadow-button)]"
       >
         Opslaan in baklogboek
       </button>

@@ -19,9 +19,9 @@ function AppContent() {
   if (overlay === 'history') {
     return (
       <div className="min-h-dvh">
-        <div className="sticky top-0 bg-stone-50/95 backdrop-blur-sm border-b border-stone-200 px-4 py-3 z-10 flex items-center justify-between">
-          <div className="text-lg font-bold text-amber-800">Desem</div>
-          <button onClick={() => setOverlay('none')} className="text-sm text-amber-600 font-medium">
+        <div className="sticky top-0 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 px-5 py-4 z-10 flex items-center justify-between">
+          <div className="text-lg font-bold text-warm-800">Desem</div>
+          <button onClick={() => setOverlay('none')} className="text-[13px] text-bread-500 font-medium">
             Terug
           </button>
         </div>

@@ -7,10 +7,10 @@ export function HistoryView() {
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-12 px-4">
-        <div className="text-4xl mb-4">&#128214;</div>
-        <h2 className="text-lg font-bold text-stone-700">Nog geen baksessies</h2>
-        <p className="text-stone-500 text-sm mt-2">
+      <div className="text-center py-16 px-6">
+        <div className="text-5xl mb-5">&#128214;</div>
+        <h2 className="text-xl font-bold text-warm-700">Nog geen baksessies</h2>
+        <p className="text-warm-400 mt-3 leading-relaxed">
           Na je eerste bakproces verschijnt hier je logboek met scores en statistieken.
         </p>
       </div>
@@ -20,8 +20,8 @@ export function HistoryView() {
   const avgOverall = history.reduce((sum, r) => sum + r.scores.overall, 0) / history.length;
 
   return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-xl font-bold text-amber-800">Baklogboek</h2>
+    <div className="p-5 space-y-5">
+      <h2 className="text-2xl font-bold text-warm-800">Baklogboek</h2>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
@@ -34,36 +34,36 @@ export function HistoryView() {
       </div>
 
       {/* Session list */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {history.map(result => {
           const dateStr = format(new Date(result.date), 'd MMM yyyy', { locale: nl });
           const scoreBar = ['kruim', 'korst', 'smaak', 'ovenspring'] as const;
 
           return (
-            <div key={result.id} className="bg-white rounded-xl border border-stone-200 p-4">
-              <div className="flex justify-between items-start mb-2">
+            <div key={result.id} className="card">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="font-medium text-stone-800">{result.config.name}</div>
-                  <div className="text-xs text-stone-400">{dateStr}</div>
+                  <div className="font-semibold text-warm-800 text-[15px]">{result.config.name}</div>
+                  <div className="text-[12px] text-warm-400 mt-0.5">{dateStr}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-amber-600">
+                  <div className="text-2xl font-bold text-bread-500">
                     {result.scores.overall}/5
                   </div>
                 </div>
               </div>
 
               {/* Mini score bars */}
-              <div className="grid grid-cols-4 gap-2 mt-3">
+              <div className="grid grid-cols-4 gap-3 mt-4">
                 {scoreBar.map(key => (
                   <div key={key} className="text-center">
-                    <div className="text-xs text-stone-400 capitalize mb-1">{key}</div>
-                    <div className="flex gap-0.5 justify-center">
+                    <div className="text-[11px] text-warm-400 capitalize mb-1.5">{key}</div>
+                    <div className="flex gap-1 justify-center">
                       {[1, 2, 3, 4, 5].map(v => (
                         <div
                           key={v}
-                          className={`w-2 h-2 rounded-full ${
-                            v <= result.scores[key] ? 'bg-amber-400' : 'bg-stone-200'
+                          className={`w-2.5 h-2.5 rounded-full ${
+                            v <= result.scores[key] ? 'bg-bread-300' : 'bg-warm-200'
                           }`}
                         />
                       ))}
@@ -73,7 +73,7 @@ export function HistoryView() {
               </div>
 
               {/* Config summary */}
-              <div className="mt-3 flex gap-2 flex-wrap">
+              <div className="mt-4 flex gap-2 flex-wrap">
                 <Tag>{result.config.flourType}</Tag>
                 <Tag>{result.config.hydrationPercent}% hydratie</Tag>
                 <Tag>{result.config.roomTempC}°C</Tag>
@@ -81,7 +81,7 @@ export function HistoryView() {
               </div>
 
               {result.notes && (
-                <div className="mt-2 text-xs text-stone-500 italic">"{result.notes}"</div>
+                <div className="mt-3 text-[13px] text-warm-400 italic leading-relaxed">"{result.notes}"</div>
               )}
             </div>
           );
@@ -93,16 +93,16 @@ export function HistoryView() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-3 text-center">
-      <div className="text-xl font-bold text-amber-700">{value}</div>
-      <div className="text-xs text-stone-400">{label}</div>
+    <div className="card text-center py-4">
+      <div className="text-xl font-bold text-bread-500">{value}</div>
+      <div className="text-[12px] text-warm-400 mt-1">{label}</div>
     </div>
   );
 }
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full">
+    <span className="text-[12px] bg-warm-100 text-warm-500 px-2.5 py-1 rounded-full">
       {children}
     </span>
   );

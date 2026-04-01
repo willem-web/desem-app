@@ -1,34 +1,52 @@
 @import "tailwindcss";
 
 @theme {
-  /* Warm bread palette */
-  --color-bread-50: #fdf8f0;
-  --color-bread-100: #f9eddb;
-  --color-bread-200: #f0d5a8;
-  --color-bread-300: #e6b96e;
-  --color-bread-400: #d4943a;
-  --color-bread-500: #b87324;
-  --color-bread-600: #9a5a1a;
-  --color-bread-700: #7a4517;
-  --color-bread-800: #5c3414;
-  --color-bread-900: #3d2210;
+  /* Primary warm amber — derived from #FAB755 */
+  --color-bread-50: #FFF8EB;
+  --color-bread-100: #FEEFC7;
+  --color-bread-200: #FAECA7;
+  --color-bread-300: #FBCF6A;
+  --color-bread-400: #FAB755;
+  --color-bread-500: #E8A03A;
+  --color-bread-600: #C6822A;
+  --color-bread-700: #9A6220;
+  --color-bread-800: #6E4518;
+  --color-bread-900: #432A10;
 
-  /* Neutral warm grays */
-  --color-warm-50: #faf9f7;
-  --color-warm-100: #f3f1ed;
-  --color-warm-200: #e8e4dd;
-  --color-warm-300: #d5d0c7;
-  --color-warm-400: #a8a196;
-  --color-warm-500: #7a7368;
-  --color-warm-600: #5c564d;
-  --color-warm-700: #443f38;
-  --color-warm-800: #2e2a25;
-  --color-warm-900: #1a1714;
+  /* Slate blue-gray text — derived from #4C587A */
+  --color-warm-50: #F5F6F9;
+  --color-warm-100: #E8EAF0;
+  --color-warm-200: #D0D4DE;
+  --color-warm-300: #B0B6C8;
+  --color-warm-400: #8890A6;
+  --color-warm-500: #6A7390;
+  --color-warm-600: #4C587A;
+  --color-warm-700: #3D4762;
+  --color-warm-800: #2E354A;
+  --color-warm-900: #1E2232;
 
-  /* Accents */
-  --color-crust: #8B4513;
-  --color-flour: #f5f0e8;
-  --color-starter: #c4a35a;
+  /* Olive accent — derived from #7A6F37 */
+  --color-olive-50: #FAF8F0;
+  --color-olive-100: #F0ECD8;
+  --color-olive-200: #DDD5A8;
+  --color-olive-300: #B8AC72;
+  --color-olive-400: #9A8F4E;
+  --color-olive-500: #7A6F37;
+  --color-olive-600: #635A2D;
+  --color-olive-700: #4B4422;
+  --color-olive-800: #343015;
+  --color-olive-900: #1E1C0D;
+
+  /* Lavender — derived from #C6D3F7 */
+  --color-lav-50: #F0F3FC;
+  --color-lav-100: #E0E7FA;
+  --color-lav-200: #C6D3F7;
+  --color-lav-300: #A3B5F0;
+  --color-lav-400: #7E94E4;
+  --color-lav-500: #5E76D4;
+  --color-lav-600: #4558B0;
+  --color-lav-700: #354389;
+  --color-lav-800: #273064;
 
   /* Standard colors for status */
   --color-emerald-50: #ecfdf5;
@@ -94,11 +112,11 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 
-  /* Shadows */
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-button: 0 1px 2px rgba(0,0,0,0.08);
-  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  /* Shadows — softer, more elevated */
+  --shadow-card: 0 1px 4px rgba(46,53,74,0.05), 0 1px 2px rgba(46,53,74,0.03);
+  --shadow-card-hover: 0 6px 16px rgba(46,53,74,0.08), 0 2px 6px rgba(46,53,74,0.04);
+  --shadow-button: 0 2px 4px rgba(46,53,74,0.1);
+  --shadow-elevated: 0 10px 32px rgba(46,53,74,0.1), 0 2px 8px rgba(46,53,74,0.05);
 }
 
 * {
@@ -118,14 +136,13 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background: linear-gradient(180deg, var(--color-bread-50) 0%, var(--color-warm-50) 100%);
-  background-attachment: fixed;
+  background: var(--color-warm-50);
   color: var(--color-warm-800);
   min-height: 100dvh;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   overscroll-behavior: none;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 #root {
@@ -139,17 +156,17 @@ body {
 /* Card base style */
 .card {
   background: white;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid var(--color-warm-200);
   box-shadow: var(--shadow-card);
-  padding: 16px;
+  padding: 20px;
 }
 
 /* Range inputs */
 input[type="range"] {
   -webkit-appearance: none;
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
   background: var(--color-warm-200);
   outline: none;
 }
@@ -162,7 +179,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: linear-gradient(135deg, var(--color-bread-400), var(--color-bread-500));
   cursor: pointer;
   border: 3px solid white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(250,183,85,0.35);
 }
 
 /* Number input spinners */
@@ -194,7 +211,7 @@ button:active {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-bread-400);
-  box-shadow: 0 0 0 3px rgba(184, 115, 36, 0.15);
+  box-shadow: 0 0 0 3px rgba(250,183,85,0.2);
 }
 
 /* Scrollbar */

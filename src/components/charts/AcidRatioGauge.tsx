@@ -13,68 +13,65 @@ export function AcidRatioGauge() {
   const coldHours = coldStage ? coldStage.calculatedDurationMs / 3600000 : 0;
   const coldNote = coldHours > 0 ? coldRetardFlavorNote(coldHours) : null;
 
-  // After cold retard, the ratio shifts toward acetic
   const finalLactic = coldHours > 0
-    ? lacticAcidFraction(4) * 0.6 + bulkLactic * 0.4 // weighted blend
+    ? lacticAcidFraction(4) * 0.6 + bulkLactic * 0.4
     : bulkLactic;
   const finalFlavor = flavorDescription(finalLactic);
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-4">
+    <div className="card space-y-5">
       <div>
-        <h3 className="font-semibold text-stone-800 mb-1">Zuurverhouding</h3>
-        <p className="text-xs text-stone-500 mb-3">
+        <h3 className="font-semibold text-warm-800 mb-1 text-[15px]">Zuurverhouding</h3>
+        <p className="text-[13px] text-warm-400 mb-4">
           Verhouding melkzuur/azijnzuur bij {process.config.roomTempC}°C
         </p>
 
-        {/* Bulk ratio bar */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-medium text-stone-600">Tijdens bulk ({process.config.roomTempC}°C)</div>
-          <div className="flex h-6 rounded-full overflow-hidden">
+        <div className="space-y-2">
+          <div className="text-[12px] font-medium text-warm-600">Tijdens bulk ({process.config.roomTempC}°C)</div>
+          <div className="flex h-7 rounded-full overflow-hidden">
             <div
-              className="bg-amber-400 flex items-center justify-center text-xs font-medium text-amber-900"
+              className="bg-bread-300 flex items-center justify-center text-[12px] font-semibold text-bread-800"
               style={{ width: `${bulkLactic * 100}%` }}
             >
               {Math.round(bulkLactic * 100)}%
             </div>
             <div
-              className="bg-blue-400 flex items-center justify-center text-xs font-medium text-blue-900"
+              className="bg-lav-300 flex items-center justify-center text-[12px] font-semibold text-lav-800"
               style={{ width: `${bulkAcetic * 100}%` }}
             >
               {Math.round(bulkAcetic * 100)}%
             </div>
           </div>
-          <div className="flex justify-between text-xs text-stone-400">
+          <div className="flex justify-between text-[12px] text-warm-400">
             <span>Melkzuur (mild)</span>
             <span>Azijnzuur (scherp)</span>
           </div>
-          <div className="text-sm text-stone-700 mt-1">{flavor}</div>
+          <div className="text-[14px] text-warm-700 mt-1">{flavor}</div>
         </div>
       </div>
 
-      {/* Final ratio after cold retard */}
       {coldHours > 0 && (
-        <div className="space-y-1.5 pt-2 border-t border-stone-100">
-          <div className="text-xs font-medium text-stone-600">
+        <div className="space-y-2 pt-4 border-t border-warm-100">
+          <div className="text-[12px] font-medium text-warm-600">
             Na koude rijs ({Math.round(coldHours)}u bij 4°C)
           </div>
-          <div className="flex h-6 rounded-full overflow-hidden">
+          <div className="flex h-7 rounded-full overflow-hidden">
             <div
-              className="bg-amber-400 flex items-center justify-center text-xs font-medium text-amber-900"
+              className="bg-bread-300 flex items-center justify-center text-[12px] font-semibold text-bread-800"
               style={{ width: `${finalLactic * 100}%` }}
             >
               {Math.round(finalLactic * 100)}%
             </div>
             <div
-              className="bg-blue-400 flex items-center justify-center text-xs font-medium text-blue-900"
+              className="bg-lav-300 flex items-center justify-center text-[12px] font-semibold text-lav-800"
               style={{ width: `${(1 - finalLactic) * 100}%` }}
             >
               {Math.round((1 - finalLactic) * 100)}%
             </div>
           </div>
-          <div className="text-sm text-stone-700">{finalFlavor}</div>
+          <div className="text-[14px] text-warm-700">{finalFlavor}</div>
           {coldNote && (
-            <div className="text-xs text-blue-600 bg-blue-50 rounded-lg p-2 mt-1">{coldNote}</div>
+            <div className="text-[13px] text-lav-600 bg-lav-50 rounded-2xl p-3 mt-2 leading-relaxed">{coldNote}</div>
           )}
         </div>
       )}

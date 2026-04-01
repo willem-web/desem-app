@@ -14,7 +14,7 @@ export function ProcessTimeline() {
   return (
     <div className="relative">
       {/* Vertical line */}
-      <div className="absolute left-[19px] top-3 bottom-3 w-0.5 bg-stone-200" />
+      <div className="absolute left-[19px] top-3 bottom-3 w-0.5 bg-warm-200" />
 
       <div className="space-y-0">
         {process.stages.map((stage, i) => {
@@ -25,7 +25,6 @@ export function ProcessTimeline() {
           const mins = durationMin % 60;
           const durationStr = hours > 0 ? `${hours}u ${mins}m` : `${mins} min`;
 
-          // Calculate time of day
           const startDate = new Date(stage.startTime);
           const timeStr = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
 
@@ -33,8 +32,8 @@ export function ProcessTimeline() {
             <div
               key={stage.id}
               ref={isCurrent ? activeRef : undefined}
-              className={`relative flex items-start gap-4 py-3 px-2 rounded-xl transition-all ${
-                isCurrent ? 'bg-amber-50/80' : ''
+              className={`relative flex items-start gap-4 py-4 px-2 rounded-2xl transition-all ${
+                isCurrent ? 'bg-bread-50' : ''
               } ${isComplete ? 'opacity-50' : ''}`}
             >
               {/* Dot */}
@@ -44,12 +43,12 @@ export function ProcessTimeline() {
                     <span className="text-white text-sm">&#10003;</span>
                   </div>
                 ) : isCurrent ? (
-                  <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-md shadow-amber-200 animate-pulse">
-                    <span className="text-white text-xs font-bold">{i + 1}</span>
+                  <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-bread-300 to-bread-400 flex items-center justify-center shadow-md shadow-bread-200 animate-pulse">
+                    <span className="text-white text-[13px] font-bold">{i + 1}</span>
                   </div>
                 ) : (
-                  <div className="w-[38px] h-[38px] rounded-full bg-stone-100 border-2 border-stone-200 flex items-center justify-center">
-                    <span className="text-stone-400 text-xs font-medium">{i + 1}</span>
+                  <div className="w-[38px] h-[38px] rounded-full bg-warm-100 border-2 border-warm-200 flex items-center justify-center">
+                    <span className="text-warm-400 text-[13px] font-medium">{i + 1}</span>
                   </div>
                 )}
               </div>
@@ -57,20 +56,20 @@ export function ProcessTimeline() {
               {/* Content */}
               <div className="flex-1 min-w-0 pt-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className={`font-semibold text-sm ${
-                    isCurrent ? 'text-amber-800' :
+                  <span className={`font-semibold text-[15px] ${
+                    isCurrent ? 'text-warm-800' :
                     isComplete ? 'text-emerald-700' :
-                    'text-stone-700'
+                    'text-warm-600'
                   }`}>
                     {stage.name}
                   </span>
-                  <span className="text-xs font-mono text-stone-400 flex-shrink-0">
+                  <span className="text-[13px] font-mono text-warm-400 flex-shrink-0">
                     {durationStr}
                   </span>
                 </div>
-                <div className="text-xs text-stone-400 mt-0.5">
+                <div className="text-[13px] text-warm-400 mt-1">
                   {timeStr}
-                  {isCurrent && <span className="ml-2 text-amber-600 font-medium">Nu actief</span>}
+                  {isCurrent && <span className="ml-2 text-bread-500 font-medium">Nu actief</span>}
                 </div>
               </div>
             </div>

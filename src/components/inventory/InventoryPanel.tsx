@@ -28,19 +28,19 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="min-h-dvh bg-stone-50">
-      <div className="sticky top-0 bg-stone-50/95 backdrop-blur-sm border-b border-stone-200 px-4 py-3 z-10 flex items-center justify-between">
-        <div className="text-lg font-bold text-amber-800">Voorraad</div>
-        <button onClick={onClose} className="text-sm text-stone-500">Sluiten</button>
+    <div className="min-h-dvh bg-warm-50">
+      <div className="sticky top-0 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 px-5 py-4 z-10 flex items-center justify-between">
+        <div className="text-lg font-bold text-warm-800">Voorraad</div>
+        <button onClick={onClose} className="text-[13px] text-warm-400 font-medium">Sluiten</button>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-5 space-y-5">
         {/* Low stock warning */}
         {lowStock.length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <h3 className="font-semibold text-red-800 mb-2">Lage voorraad</h3>
+          <div className="card bg-red-50 border-red-100">
+            <h3 className="font-semibold text-red-600 mb-2 text-[15px]">Lage voorraad</h3>
             {lowStock.map(item => (
-              <div key={item.id} className="text-sm text-red-700">
+              <div key={item.id} className="text-[13px] text-red-500">
                 {item.name}: <strong>{item.stockGrams}g</strong> (drempel: {item.lowStockThreshold}g)
               </div>
             ))}
@@ -49,28 +49,28 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
 
         {/* Inventory list */}
         {inventory.map(item => (
-          <div key={item.id} className="bg-white rounded-xl border border-stone-200 p-4">
-            <div className="flex items-start justify-between mb-3">
+          <div key={item.id} className="card">
+            <div className="flex items-start justify-between mb-4">
               <div>
-                <div className="font-medium text-stone-800">{item.name}</div>
-                <div className="text-xs text-stone-400">
+                <div className="font-semibold text-warm-800 text-[15px]">{item.name}</div>
+                <div className="text-[12px] text-warm-400 mt-1">
                   {item.type} &middot; {item.grain} &middot; {item.proteinPercent}% eiwit
                 </div>
               </div>
               <button
                 onClick={() => removeFlour(item.id)}
-                className="text-xs text-stone-300 hover:text-red-500"
+                className="text-[12px] text-warm-300 hover:text-red-500 transition-colors"
               >
                 Verwijder
               </button>
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-sm text-stone-600 w-16">Voorraad:</label>
-              <div className="flex items-center gap-2 flex-1">
+              <label className="text-[13px] text-warm-500 w-16">Voorraad:</label>
+              <div className="flex items-center gap-2.5 flex-1">
                 <button
                   onClick={() => updateStock(item.id, Math.max(0, (item.stockGrams ?? 0) - 100))}
-                  className="w-8 h-8 rounded-lg border border-stone-200 text-stone-500 font-bold"
+                  className="w-10 h-10 rounded-xl border border-warm-200 text-warm-500 font-bold bg-white shadow-sm"
                 >
                   -
                 </button>
@@ -78,43 +78,42 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
                   type="number"
                   value={item.stockGrams ?? 0}
                   onChange={e => updateStock(item.id, Number(e.target.value))}
-                  className="flex-1 text-center p-2 border border-stone-200 rounded-lg text-sm font-mono"
+                  className="flex-1 text-center p-2.5 border border-warm-200 rounded-xl text-[14px] font-mono"
                 />
                 <button
                   onClick={() => updateStock(item.id, (item.stockGrams ?? 0) + 100)}
-                  className="w-8 h-8 rounded-lg border border-stone-200 text-stone-500 font-bold"
+                  className="w-10 h-10 rounded-xl border border-warm-200 text-warm-500 font-bold bg-white shadow-sm"
                 >
                   +
                 </button>
-                <span className="text-sm text-stone-400 w-4">g</span>
+                <span className="text-[13px] text-warm-400 w-4">g</span>
               </div>
             </div>
 
-            {/* Low stock indicator */}
             {(item.stockGrams ?? 0) > 0 && (item.stockGrams ?? 0) < (item.lowStockThreshold ?? 500) && (
-              <div className="mt-2 text-xs text-red-500">Onder drempelwaarde!</div>
+              <div className="mt-3 text-[12px] text-red-500 font-medium">Onder drempelwaarde!</div>
             )}
           </div>
         ))}
 
         {/* Add new flour */}
         {showAdd ? (
-          <div className="bg-white rounded-xl border border-amber-200 p-4 space-y-3">
-            <h3 className="font-semibold text-stone-800">Nieuw meel toevoegen</h3>
+          <div className="card border-bread-200 space-y-4">
+            <h3 className="font-semibold text-warm-800 text-[15px]">Nieuw meel toevoegen</h3>
             <input
               type="text"
               value={newName}
               onChange={e => setNewName(e.target.value)}
               placeholder="Naam (bijv. Bio Tarwebloem)"
-              className="w-full p-3 border border-stone-200 rounded-lg text-sm"
+              className="w-full p-3.5 border border-warm-200 rounded-2xl text-[14px]"
             />
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-stone-500">Type</label>
+                <label className="text-[12px] text-warm-500 font-medium">Type</label>
                 <select
                   value={newType}
                   onChange={e => setNewType(e.target.value as FlourType)}
-                  className="w-full p-2 border border-stone-200 rounded-lg text-sm"
+                  className="w-full p-3 border border-warm-200 rounded-xl text-[14px] mt-1"
                 >
                   {['T45', 'T65', 'T80', 'T150', 'spelt', 'rogge'].map(t => (
                     <option key={t} value={t}>{t}</option>
@@ -122,11 +121,11 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-stone-500">Graansoort</label>
+                <label className="text-[12px] text-warm-500 font-medium">Graansoort</label>
                 <select
                   value={newGrain}
                   onChange={e => setNewGrain(e.target.value as GrainType)}
-                  className="w-full p-2 border border-stone-200 rounded-lg text-sm"
+                  className="w-full p-3 border border-warm-200 rounded-xl text-[14px] mt-1"
                 >
                   {['tarwe', 'spelt', 'rogge'].map(g => (
                     <option key={g} value={g}>{g}</option>
@@ -135,24 +134,24 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
               </div>
             </div>
             <div>
-              <label className="text-xs text-stone-500">Voorraad (g)</label>
+              <label className="text-[12px] text-warm-500 font-medium">Voorraad (g)</label>
               <input
                 type="number"
                 value={newStock}
                 onChange={e => setNewStock(Number(e.target.value))}
-                className="w-full p-2 border border-stone-200 rounded-lg text-sm"
+                className="w-full p-3 border border-warm-200 rounded-xl text-[14px] mt-1"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowAdd(false)}
-                className="flex-1 py-2 rounded-lg border border-stone-200 text-stone-500 text-sm"
+                className="flex-1 py-3 rounded-2xl border border-warm-200 text-warm-500 text-[14px] font-medium"
               >
                 Annuleren
               </button>
               <button
                 onClick={handleAdd}
-                className="flex-1 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium"
+                className="flex-1 py-3 rounded-2xl bg-bread-400 text-white text-[14px] font-semibold shadow-[var(--shadow-button)]"
               >
                 Toevoegen
               </button>
@@ -161,7 +160,7 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
         ) : (
           <button
             onClick={() => setShowAdd(true)}
-            className="w-full py-3 rounded-xl border-2 border-dashed border-stone-300 text-stone-500 text-sm hover:border-amber-300"
+            className="w-full py-4 rounded-2xl border-2 border-dashed border-warm-300 text-warm-400 text-[14px] font-medium hover:border-bread-300 hover:text-bread-500 transition-all"
           >
             + Nieuw meel toevoegen
           </button>
@@ -169,12 +168,12 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
 
         {/* Shopping list */}
         {lowStock.length > 0 && (
-          <div className="bg-white rounded-xl border border-stone-200 p-4">
-            <h3 className="font-semibold text-stone-800 mb-2">Boodschappenlijstje</h3>
+          <div className="card">
+            <h3 className="font-semibold text-warm-800 mb-3 text-[15px]">Boodschappenlijstje</h3>
             {lowStock.map(item => (
-              <div key={item.id} className="flex justify-between text-sm py-1.5 border-b border-stone-100 last:border-0">
-                <span className="text-stone-700">{item.name}</span>
-                <span className="text-stone-400">
+              <div key={item.id} className="flex justify-between text-[14px] py-2.5 border-b border-warm-100 last:border-0">
+                <span className="text-warm-700">{item.name}</span>
+                <span className="text-warm-400">
                   bijkopen: {(item.lowStockThreshold ?? 500) - (item.stockGrams ?? 0)}g+
                 </span>
               </div>

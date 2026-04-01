@@ -20,49 +20,48 @@ export function PhEstimate() {
       : 0;
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-4">
-      <h3 className="font-semibold text-stone-800 mb-1">pH-schatting</h3>
-      <p className="text-xs text-stone-500 mb-3">
+    <div className="card">
+      <h3 className="font-semibold text-warm-800 mb-1 text-[15px]">pH-schatting</h3>
+      <p className="text-[13px] text-warm-400 mb-4">
         Verwachte pH-daling tijdens bulkfermentatie (start: {startPh})
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#D0D4DE" />
           <XAxis
             dataKey="timeMinutes"
             tickFormatter={v => `${Math.round(v / 60)}u`}
-            tick={{ fontSize: 11, fill: '#78716c' }}
+            tick={{ fontSize: 11, fill: '#8890A6' }}
           />
           <YAxis
             reversed
             domain={[4.0, Math.ceil(startPh * 10) / 10]}
-            tick={{ fontSize: 11, fill: '#78716c' }}
+            tick={{ fontSize: 11, fill: '#8890A6' }}
           />
           <Tooltip
             formatter={(value) => [Number(value).toFixed(2), 'pH']}
             labelFormatter={v => `${Math.round(Number(v) / 60 * 10) / 10}u`}
           />
-          {/* Target zone highlight */}
-          <ReferenceArea y1={4.2} y2={4.5} fill="#bbf7d0" fillOpacity={0.4} />
+          <ReferenceArea y1={4.2} y2={4.5} fill="#C6D3F7" fillOpacity={0.4} />
           <Line
             type="monotone"
             dataKey="ph"
-            stroke="#7c3aed"
+            stroke="#4C587A"
             strokeWidth={2}
             dot={false}
           />
           {elapsedMin > 0 && elapsedMin < totalMin && (
             <ReferenceLine
               x={Math.round(elapsedMin)}
-              stroke="#dc2626"
+              stroke="#7A6F37"
               strokeDasharray="4 4"
-              label={{ value: 'Nu', position: 'top', fontSize: 11, fill: '#dc2626' }}
+              label={{ value: 'Nu', position: 'top', fontSize: 11, fill: '#7A6F37' }}
             />
           )}
         </LineChart>
       </ResponsiveContainer>
-      <div className="flex items-center gap-2 mt-2 text-xs text-stone-500">
-        <span className="w-3 h-3 rounded bg-green-200 inline-block" />
+      <div className="flex items-center gap-2.5 mt-3 text-[12px] text-warm-400">
+        <span className="w-3.5 h-3.5 rounded bg-lav-200 inline-block" />
         Doelzone (pH 4.2 - 4.5)
       </div>
     </div>
