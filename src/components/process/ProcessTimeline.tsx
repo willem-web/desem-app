@@ -32,7 +32,7 @@ export function ProcessTimeline() {
             <div
               key={stage.id}
               ref={isCurrent ? activeRef : undefined}
-              className={`relative flex items-start gap-4 py-4 px-2 rounded-2xl transition-all ${
+              className={`relative flex items-start gap-4 py-3.5 px-2 rounded-2xl transition-all ${
                 isCurrent ? 'bg-bread-50' : ''
               } ${isComplete ? 'opacity-50' : ''}`}
             >
@@ -67,9 +67,10 @@ export function ProcessTimeline() {
                     {durationStr}
                   </span>
                 </div>
-                <div className="text-[13px] text-warm-400 mt-1">
-                  {timeStr}
-                  {isCurrent && <span className="ml-2 text-bread-500 font-medium">Nu actief</span>}
+                <div className="text-[13px] text-warm-400 mt-0.5 flex items-center gap-1.5">
+                  <span className="text-warm-300">&#128339;</span>
+                  <span>start {timeStr}</span>
+                  {isCurrent && <span className="ml-1 text-bread-500 font-semibold bg-bread-50 px-2 py-0.5 rounded-lg text-[11px]">Nu actief</span>}
                 </div>
               </div>
             </div>

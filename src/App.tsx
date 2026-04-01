@@ -9,19 +9,19 @@ import { HistoryView } from '@/components/feedback/HistoryView';
 import { AdvisorPanel } from '@/components/advisor/AdvisorPanel';
 import { InventoryPanel } from '@/components/inventory/InventoryPanel';
 
-type Overlay = 'none' | 'history' | 'advisor' | 'inventory';
+export type Overlay = 'none' | 'history' | 'advisor' | 'inventory';
 
 function AppContent() {
   const { state } = useBread();
   const [overlay, setOverlay] = useState<Overlay>('none');
 
-  // Overlays
+  // Overlays — accessible from everywhere
   if (overlay === 'history') {
     return (
       <div className="min-h-dvh">
         <div className="sticky top-0 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 px-5 py-4 z-10 flex items-center justify-between">
-          <div className="text-lg font-bold text-warm-800">Desem</div>
-          <button onClick={() => setOverlay('none')} className="text-[13px] text-bread-500 font-medium">
+          <div className="text-lg font-bold text-warm-800">Baklogboek</div>
+          <button onClick={() => setOverlay('none')} className="text-[14px] text-bread-500 font-semibold">
             Terug
           </button>
         </div>
@@ -36,9 +36,9 @@ function AppContent() {
     return <InventoryPanel onClose={() => setOverlay('none')} />;
   }
 
-  // Active process
+  // Active process — pass overlay nav
   if (state.process && !state.process.isComplete) {
-    return <ProcessScreen />;
+    return <ProcessScreen onNavigate={setOverlay} />;
   }
 
   // Process just completed

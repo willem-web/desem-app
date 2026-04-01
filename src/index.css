@@ -153,13 +153,15 @@ body {
   margin: 0 auto;
 }
 
-/* Card base style */
-.card {
-  background: white;
-  border-radius: 18px;
-  border: 1px solid var(--color-warm-200);
-  box-shadow: var(--shadow-card);
-  padding: 20px;
+/* Card base style — @layer so Tailwind utilities can override */
+@layer base {
+  .card {
+    background: white;
+    border-radius: 18px;
+    border: 1px solid var(--color-warm-200);
+    box-shadow: var(--shadow-card);
+    padding: 20px;
+  }
 }
 
 /* Range inputs */
