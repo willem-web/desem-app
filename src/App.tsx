@@ -62,10 +62,8 @@ function AppContent() {
 
 function NavPill({ onClick, label }: { onClick: () => void; label: string }) {
   return (
-    <button
-      onClick={onClick}
-      className="px-4 py-2 bg-white/90 backdrop-blur-sm border border-stone-200 rounded-full text-sm text-stone-600 shadow-sm hover:border-amber-300 transition-colors"
-    >
+    <button onClick={onClick}
+      className="px-4 py-2.5 bg-white/90 backdrop-blur-xl border border-warm-200 rounded-full text-xs font-semibold text-warm-600 shadow-[var(--shadow-card)] hover:border-bread-300 hover:text-bread-600 transition-all">
       {label}
     </button>
   );

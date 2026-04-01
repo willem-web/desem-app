@@ -1,6 +1,72 @@
 @import "tailwindcss";
 
 @theme {
+  /* Warm bread palette */
+  --color-bread-50: #fdf8f0;
+  --color-bread-100: #f9eddb;
+  --color-bread-200: #f0d5a8;
+  --color-bread-300: #e6b96e;
+  --color-bread-400: #d4943a;
+  --color-bread-500: #b87324;
+  --color-bread-600: #9a5a1a;
+  --color-bread-700: #7a4517;
+  --color-bread-800: #5c3414;
+  --color-bread-900: #3d2210;
+
+  /* Neutral warm grays */
+  --color-warm-50: #faf9f7;
+  --color-warm-100: #f3f1ed;
+  --color-warm-200: #e8e4dd;
+  --color-warm-300: #d5d0c7;
+  --color-warm-400: #a8a196;
+  --color-warm-500: #7a7368;
+  --color-warm-600: #5c564d;
+  --color-warm-700: #443f38;
+  --color-warm-800: #2e2a25;
+  --color-warm-900: #1a1714;
+
+  /* Accents */
+  --color-crust: #8B4513;
+  --color-flour: #f5f0e8;
+  --color-starter: #c4a35a;
+
+  /* Standard colors for status */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-800: #1e40af;
+  --color-purple-50: #faf5ff;
+  --color-purple-100: #f3e8ff;
+  --color-purple-200: #e9d5ff;
+  --color-purple-400: #c084fc;
+  --color-purple-700: #7e22ce;
+  --color-purple-800: #6b21a8;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-800: #991b1b;
+  --color-orange-50: #fff7ed;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
   --color-amber-50: #fffbeb;
   --color-amber-100: #fef3c7;
   --color-amber-200: #fde68a;
@@ -21,38 +87,18 @@
   --color-stone-700: #44403c;
   --color-stone-800: #292524;
   --color-stone-900: #1c1917;
-  --color-emerald-500: #10b981;
-  --color-green-50: #f0fdf4;
-  --color-green-200: #bbf7d0;
-  --color-green-400: #4ade80;
-  --color-green-500: #22c55e;
-  --color-green-600: #16a34a;
-  --color-blue-50: #eff6ff;
-  --color-blue-100: #dbeafe;
-  --color-blue-200: #bfdbfe;
-  --color-blue-300: #93c5fd;
-  --color-blue-400: #60a5fa;
-  --color-blue-500: #3b82f6;
-  --color-blue-600: #2563eb;
-  --color-blue-800: #1e40af;
-  --color-purple-50: #faf5ff;
-  --color-purple-100: #f3e8ff;
-  --color-purple-200: #e9d5ff;
-  --color-purple-700: #7e22ce;
-  --color-purple-800: #6b21a8;
-  --color-red-50: #fef2f2;
-  --color-red-400: #f87171;
-  --color-red-500: #ef4444;
-  --color-red-600: #dc2626;
-  --color-red-800: #991b1b;
-  --color-orange-50: #fff7ed;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
   --color-indigo-50: #eef2ff;
   --color-violet-50: #f5f3ff;
   --color-rose-600: #e11d48;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-button: 0 1px 2px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
 }
 
 * {
@@ -67,50 +113,59 @@ html {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-stone-50);
-  color: var(--color-stone-800);
+  background: linear-gradient(180deg, var(--color-bread-50) 0%, var(--color-warm-50) 100%);
+  background-attachment: fixed;
+  color: var(--color-warm-800);
   min-height: 100dvh;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   overscroll-behavior: none;
+  line-height: 1.5;
 }
 
 #root {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  max-width: 430px;
+  margin: 0 auto;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Card base style */
+.card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--color-warm-200);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
 }
 
-/* Better range inputs on mobile */
+/* Range inputs */
 input[type="range"] {
   -webkit-appearance: none;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--color-stone-200);
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-warm-200);
   outline: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: var(--color-amber-500);
+  background: linear-gradient(135deg, var(--color-bread-400), var(--color-bread-500));
   cursor: pointer;
   border: 3px solid white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Number input without spinners */
+/* Number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -120,16 +175,33 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Smooth active state for buttons */
+/* Buttons */
 button {
-  transition: transform 0.1s ease, opacity 0.1s ease;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
 button:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* Selection color */
+/* Selection */
 ::selection {
-  background-color: var(--color-amber-200);
-  color: var(--color-amber-900);
+  background-color: var(--color-bread-200);
+  color: var(--color-bread-900);
+}
+
+/* Focus */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-bread-400);
+  box-shadow: 0 0 0 3px rgba(184, 115, 36, 0.15);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-warm-300);
+  border-radius: 2px;
 }
