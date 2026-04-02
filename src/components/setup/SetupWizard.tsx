@@ -566,26 +566,45 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       <div>
         <Label>Voedingsratio levain</Label>
         <Hint>
-          De ratio starter:meel:water voor je levain-build.
-          Hogere ratio's (1:5:5, 1:10:10) geven de gisten meer voedsel en langere piektijd.
+          De ratio <strong>starter : meel : water</strong> voor je levain-opbouw. Dit bepaalt hoeveel
+          vers voedsel (meel + water) je toevoegt aan een deel actieve starter.
         </Hint>
-        <div className="grid grid-cols-4 gap-2 mt-3">
+
+        {/* Explanation card */}
+        <div className="rounded-2xl bg-olive-50 border border-olive-200 p-4 mt-3 text-[12px] text-olive-700 leading-relaxed space-y-1.5">
+          <p>
+            <strong>Voorbeeld 1:5:5</strong> — Op 20g starter voeg je 100g meel + 100g water toe (totaal 220g levain).
+          </p>
+          <p>
+            <strong>Lage ratio</strong> (1:1:1) → veel starter t.o.v. voedsel → levain piekt snel (3-4u), maar valt ook sneller in. Handig als je haast hebt.
+          </p>
+          <p>
+            <strong>Hoge ratio</strong> (1:10:10) → weinig starter, veel voedsel → levain bouwt langzaam op (8-12u) met een langere stabiele piek. Meer smaakvorming.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mt-4">
           {([
-            ['1:1:1', 'Snel'],
-            ['1:2:2', 'Normaal'],
-            ['1:5:5', 'Standaard'],
-            ['1:10:10', 'Langzaam'],
-          ] as const).map(([ratio, hint]) => {
+            ['1:1:1', 'Snel', '3-4 uur tot piek', 'Haast, warme keuken, sterke starter'],
+            ['1:2:2', 'Normaal', '4-6 uur tot piek', 'Dagbak met gemiddelde starter'],
+            ['1:5:5', 'Standaard', '6-8 uur tot piek', 'Meest gebruikelijk, goede balans'],
+            ['1:10:10', 'Langzaam', '8-12 uur tot piek', 'Nacht-levain, maximale smaak'],
+          ] as const).map(([ratio, label, timing, when]) => {
             const isSelected = config.feedingRatio === ratio;
             return (
               <button key={ratio} onClick={() => update({ feedingRatio: ratio as FeedingRatio })}
-                className={`rounded-2xl border-2 py-3 text-center transition-all ${
+                className={`rounded-3xl border-2 p-4 text-left transition-all ${
                   isSelected
                     ? 'border-bread-400 bg-bread-50 shadow-md'
                     : 'border-warm-200 bg-white hover:shadow-md'
                 }`}>
-                <div className="font-mono font-bold text-[13px] text-warm-800">{ratio}</div>
-                <div className="text-[10px] text-warm-400 mt-0.5">{hint}</div>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-[14px] text-warm-800">{ratio}</span>
+                  {isSelected && <CheckIcon className="w-4 h-4 text-bread-500" />}
+                </div>
+                <div className="font-bold text-warm-700 text-[13px] mt-1">{label}</div>
+                <div className="text-warm-400 text-[11px] mt-0.5">{timing}</div>
+                <div className="text-olive-500 text-[11px] mt-1 italic">{when}</div>
               </button>
             );
           })}
