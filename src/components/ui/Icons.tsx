@@ -94,12 +94,15 @@ export function ThermometerIcon({ className = 'w-6 h-6' }: IconProps) {
   );
 }
 
-/** Bread loaf — single */
+/** Bread boule from above — scored with star pattern (matches app logo) */
 export function BreadIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 10c0-4 2.5-6 7-6s7 2 7 6c0 1.5-.5 2.5-1 3v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6c-.5-.5-1-1.5-1-3z" />
-      <path d="M9 10h6" />
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="3" x2="12" y2="21" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="5.5" y1="5.5" x2="18.5" y2="18.5" strokeWidth="1.4" opacity="0.6" />
+      <line x1="18.5" y1="5.5" x2="5.5" y2="18.5" strokeWidth="1.4" opacity="0.6" />
     </svg>
   );
 }

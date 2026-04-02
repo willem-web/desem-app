@@ -4,48 +4,54 @@
       <stop offset="0%" stop-color="#FAB755"/>
       <stop offset="100%" stop-color="#C6822A"/>
     </linearGradient>
-    <linearGradient id="bread" x1="0.2" y1="0" x2="0.8" y2="1">
-      <stop offset="0%" stop-color="#FFF8EB"/>
-      <stop offset="100%" stop-color="#FEEFC7"/>
-    </linearGradient>
-    <linearGradient id="crust" x1="0.3" y1="0" x2="0.7" y2="1">
-      <stop offset="0%" stop-color="#C6822A"/>
-      <stop offset="100%" stop-color="#9A6220"/>
-    </linearGradient>
-    <linearGradient id="score" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#9A6220"/>
-      <stop offset="60%" stop-color="#6E4518"/>
-    </linearGradient>
+    <radialGradient id="boule" cx="0.45" cy="0.4" r="0.55">
+      <stop offset="0%" stop-color="#F5DEB3"/>
+      <stop offset="40%" stop-color="#D4A55A"/>
+      <stop offset="80%" stop-color="#B8863A"/>
+      <stop offset="100%" stop-color="#8B6324"/>
+    </radialGradient>
+    <radialGradient id="inner" cx="0.48" cy="0.45" r="0.4">
+      <stop offset="0%" stop-color="#EED9A0" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#C6922E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#6E4518" flood-opacity="0.35"/>
+    </filter>
   </defs>
 
-  <!-- Background -->
+  <!-- Rounded square background -->
   <rect width="512" height="512" rx="108" fill="url(#bg)"/>
 
-  <!-- Subtle inner glow -->
-  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#FFF8EB" stroke-opacity="0.15" stroke-width="2"/>
+  <!-- Boule circle (bread seen from above) -->
+  <circle cx="256" cy="256" r="170" fill="url(#boule)" filter="url(#shadow)"/>
 
-  <!-- Bread boule shape — main body -->
-  <ellipse cx="256" cy="280" rx="145" ry="120" fill="url(#bread)" stroke="url(#crust)" stroke-width="5"/>
+  <!-- Inner highlight -->
+  <circle cx="256" cy="256" r="170" fill="url(#inner)"/>
 
-  <!-- Crust top dome (darker) -->
-  <path d="M120 260 Q256 130 392 260" fill="url(#crust)" opacity="0.9"/>
+  <!-- Crust ring edge -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#8B6324" stroke-width="3" opacity="0.5"/>
 
-  <!-- Score marks on top of bread -->
-  <path d="M190 215 Q256 175 322 215" fill="none" stroke="url(#score)" stroke-width="5" stroke-linecap="round"/>
-  <path d="M210 240 Q256 208 302 240" fill="none" stroke="url(#score)" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <!-- Scoring pattern — star/cross from center -->
+  <!-- Vertical score -->
+  <line x1="256" y1="110" x2="256" y2="402" stroke="#6E4518" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+  <!-- Horizontal score -->
+  <line x1="110" y1="256" x2="402" y2="256" stroke="#6E4518" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+  <!-- Diagonal score top-left to bottom-right -->
+  <line x1="153" y1="153" x2="359" y2="359" stroke="#6E4518" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+  <!-- Diagonal score top-right to bottom-left -->
+  <line x1="359" y1="153" x2="153" y2="359" stroke="#6E4518" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- Score depth lines (lighter inner lines for 3D effect) -->
+  <line x1="256" y1="115" x2="256" y2="397" stroke="#F5DEB3" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <line x1="115" y1="256" x2="397" y2="256" stroke="#F5DEB3" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <line x1="156" y1="156" x2="356" y2="356" stroke="#F5DEB3" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <line x1="356" y1="156" x2="156" y2="356" stroke="#F5DEB3" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
 
   <!-- Flour dust specks -->
-  <circle cx="200" cy="250" r="3" fill="#FFF8EB" opacity="0.6"/>
-  <circle cx="310" cy="245" r="2.5" fill="#FFF8EB" opacity="0.5"/>
-  <circle cx="250" cy="230" r="2" fill="#FFF8EB" opacity="0.4"/>
-  <circle cx="275" cy="255" r="2.5" fill="#FFF8EB" opacity="0.5"/>
-  <circle cx="230" cy="260" r="2" fill="#FFF8EB" opacity="0.35"/>
-
-  <!-- Steam wisps -->
-  <path d="M210 170 Q205 145 215 125" fill="none" stroke="#FFF8EB" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
-  <path d="M256 155 Q250 128 260 108" fill="none" stroke="#FFF8EB" stroke-width="4.5" stroke-linecap="round" opacity="0.4"/>
-  <path d="M300 168 Q295 142 305 122" fill="none" stroke="#FFF8EB" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
-
-  <!-- Subtle shadow under bread -->
-  <ellipse cx="256" cy="405" rx="120" ry="12" fill="#9A6220" opacity="0.2"/>
+  <circle cx="200" cy="200" r="4" fill="#FFF8EB" opacity="0.4"/>
+  <circle cx="310" cy="195" r="3" fill="#FFF8EB" opacity="0.35"/>
+  <circle cx="195" cy="310" r="3.5" fill="#FFF8EB" opacity="0.3"/>
+  <circle cx="315" cy="315" r="3" fill="#FFF8EB" opacity="0.35"/>
+  <circle cx="220" cy="280" r="2.5" fill="#FFF8EB" opacity="0.25"/>
+  <circle cx="290" cy="220" r="2.5" fill="#FFF8EB" opacity="0.25"/>
 </svg>

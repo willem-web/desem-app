@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import type { RecipeConfig, ProcessRoute, StarterStrength, FeedingRatio } from '@/types';
+import type { RecipeConfig, ProcessRoute, StarterStrength, FeedingRatio, FlourType } from '@/types';
 import { presetRecipes } from '@/data/recipes';
-import { presetBlends, calculateBlendAmounts, effectiveFlourType, type FlourBlend } from '@/data/flourBlends';
+import { presetBlends, calculateBlendAmounts, effectiveFlourType, type FlourBlend, type FlourBlendComponent } from '@/data/flourBlends';
 import { calculateWaterTemperature, estimateFlourTemp } from '@/models/temperature';
 import { calculateProcessTimeline } from '@/models/stages';
 import { useBread } from '@/context/BreadContext';
+import { useCustomRecipes } from '@/hooks/useCustomRecipes';
+import { useCustomBlends, type CustomBlend } from '@/hooks/useCustomBlends';
 import type { Overlay } from '@/App';
 import {
   WheatIcon, MoonIcon, LayersIcon, MountainIcon, LeafIcon, GrainIcon,
   SunIcon, ThermometerIcon, BreadIcon, MicheIcon, DoubleBreadIcon,
-  CheckIcon, MoreIcon,
+  CheckIcon, MoreIcon, XIcon,
 } from '@/components/ui/Icons';
 
 // Enriched recipe display data
@@ -31,16 +33,278 @@ const breadSizes: Array<{ label: string; desc: string; flourGrams: number; icon:
   { label: '2 broden', desc: 'Twee broden of batards (~1.6kg)', flourGrams: 1000, icon: <DoubleBreadIcon className="w-8 h-8 text-bread-700" /> },
 ];
 
+const FLOUR_TYPE_OPTIONS: { value: FlourType; label: string }[] = [
+  { value: 'T45', label: 'T45 Patisserie' },
+  { value: 'T65', label: 'T65 Tradition' },
+  { value: 'T80', label: 'T80 Gebuild' },
+  { value: 'T150', label: 'T150 Volkoren' },
+  { value: 'spelt', label: 'Speltbloem' },
+  { value: 'rogge', label: 'Roggemeel' },
+];
+
+// ==================== RECIPE EDIT MODAL ====================
+
+function RecipeEditModal({
+  initial,
+  allBlends,
+  onSave,
+  onCancel,
+}: {
+  initial: RecipeConfig;
+  allBlends: FlourBlend[];
+  onSave: (recipe: RecipeConfig) => void;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState<RecipeConfig>({ ...initial });
+  const upd = (partial: Partial<RecipeConfig>) => setDraft(prev => ({ ...prev, ...partial }));
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative w-full max-w-[430px] bg-white rounded-t-3xl max-h-[85vh] flex flex-col animate-slide-up">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-warm-200">
+          <h3 className="text-lg font-bold text-warm-800">Eigen recept</h3>
+          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-warm-100">
+            <XIcon className="w-4 h-4 text-warm-500" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <FieldGroup label="Naam">
+            <input type="text" value={draft.name} onChange={e => upd({ name: e.target.value })}
+              className="field-input" placeholder="Mijn recept" />
+          </FieldGroup>
+
+          <FieldGroup label="Rijsmethode">
+            <div className="flex gap-2">
+              {(['warm', 'koud'] as const).map(r => (
+                <button key={r} onClick={() => upd({ route: r, targetDDT: r === 'warm' ? 26 : 23 })}
+                  className={`flex-1 py-2 rounded-xl text-[13px] font-bold border-2 transition-all ${
+                    draft.route === r ? 'border-bread-400 bg-bread-50 text-bread-700' : 'border-warm-200 text-warm-500'
+                  }`}>
+                  {r === 'warm' ? 'Warm' : 'Koude rijs'}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup label={`Starter: ${draft.starterPercent}%`}>
+              <input type="range" min={5} max={30} step={1} value={draft.starterPercent}
+                onChange={e => upd({ starterPercent: Number(e.target.value) })} className="w-full" />
+            </FieldGroup>
+            <FieldGroup label={`Hydratie: ${draft.hydrationPercent}%`}>
+              <input type="range" min={60} max={90} step={1} value={draft.hydrationPercent}
+                onChange={e => upd({ hydrationPercent: Number(e.target.value) })} className="w-full" />
+            </FieldGroup>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup label={`Zout: ${draft.saltPercent}%`}>
+              <input type="range" min={1} max={3} step={0.1} value={draft.saltPercent}
+                onChange={e => upd({ saltPercent: Number(e.target.value) })} className="w-full" />
+            </FieldGroup>
+            <FieldGroup label={`DDT: ${draft.targetDDT}\u00B0C`}>
+              <input type="range" min={20} max={30} step={1} value={draft.targetDDT}
+                onChange={e => upd({ targetDDT: Number(e.target.value) })} className="w-full" />
+            </FieldGroup>
+          </div>
+
+          <FieldGroup label="Meelmengsel">
+            <select value={draft.flourBlendId ?? ''} onChange={e => {
+              const blend = allBlends.find(b => b.id === e.target.value);
+              if (blend) {
+                upd({ flourBlendId: blend.id, flourType: effectiveFlourType(blend), hydrationPercent: blend.suggestedHydration });
+              }
+            }} className="field-input">
+              {allBlends.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </FieldGroup>
+
+          <FieldGroup label="Startersterkte">
+            <div className="grid grid-cols-4 gap-1.5">
+              {(['zwak', 'gemiddeld', 'sterk', 'piek'] as const).map(s => (
+                <button key={s} onClick={() => upd({ starterStrength: s })}
+                  className={`py-1.5 rounded-lg text-[11px] font-bold border-2 transition-all ${
+                    draft.starterStrength === s ? 'border-bread-400 bg-bread-50 text-bread-700' : 'border-warm-200 text-warm-500'
+                  }`}>
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+
+          <FieldGroup label="Voedingsratio">
+            <div className="grid grid-cols-4 gap-1.5">
+              {(['1:1:1', '1:2:2', '1:5:5', '1:10:10'] as const).map(r => (
+                <button key={r} onClick={() => upd({ feedingRatio: r })}
+                  className={`py-1.5 rounded-lg text-[11px] font-mono font-bold border-2 transition-all ${
+                    draft.feedingRatio === r ? 'border-bread-400 bg-bread-50 text-bread-700' : 'border-warm-200 text-warm-500'
+                  }`}>
+                  {r}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-warm-200">
+          <button onClick={() => onSave(draft)}
+            disabled={!draft.name.trim()}
+            className="w-full min-h-[48px] rounded-2xl bg-gradient-to-r from-bread-400 to-bread-500 text-white font-bold text-[15px] shadow-[var(--shadow-button)] disabled:opacity-40">
+            Opslaan
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==================== BLEND EDIT MODAL ====================
+
+function BlendEditModal({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial?: FlourBlend;
+  onSave: (blend: Omit<FlourBlend, 'id'>) => void;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState(initial?.name ?? '');
+  const [description, setDescription] = useState(initial?.description ?? '');
+  const [suggestedHydration, setSuggestedHydration] = useState(initial?.suggestedHydration ?? 72);
+  const [components, setComponents] = useState<FlourBlendComponent[]>(
+    initial?.components ?? [{ flourType: 'T65', label: 'T65 Tradition', percentage: 100 }]
+  );
+
+  const totalPct = components.reduce((s, c) => s + c.percentage, 0);
+  const isValid = name.trim() && components.length > 0 && totalPct === 100;
+
+  const updateComponent = (idx: number, partial: Partial<FlourBlendComponent>) => {
+    setComponents(prev => prev.map((c, i) => i === idx ? { ...c, ...partial } : c));
+  };
+
+  const addComponent = () => {
+    setComponents(prev => [...prev, { flourType: 'T65', label: 'T65 Tradition', percentage: 0 }]);
+  };
+
+  const removeComponent = (idx: number) => {
+    setComponents(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const flourLabel = (ft: FlourType) => FLOUR_TYPE_OPTIONS.find(o => o.value === ft)?.label ?? ft;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="relative w-full max-w-[430px] bg-white rounded-t-3xl max-h-[85vh] flex flex-col animate-slide-up">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-warm-200">
+          <h3 className="text-lg font-bold text-warm-800">Eigen mengsel</h3>
+          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-warm-100">
+            <XIcon className="w-4 h-4 text-warm-500" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <FieldGroup label="Naam">
+            <input type="text" value={name} onChange={e => setName(e.target.value)}
+              className="field-input" placeholder="Mijn mengsel" />
+          </FieldGroup>
+
+          <FieldGroup label="Beschrijving">
+            <input type="text" value={description} onChange={e => setDescription(e.target.value)}
+              className="field-input" placeholder="Korte beschrijving" />
+          </FieldGroup>
+
+          <FieldGroup label={`Hydratie-advies: ${suggestedHydration}%`}>
+            <input type="range" min={60} max={90} step={1} value={suggestedHydration}
+              onChange={e => setSuggestedHydration(Number(e.target.value))} className="w-full" />
+          </FieldGroup>
+
+          <div>
+            <Label>Meelsoorten</Label>
+            <div className="space-y-2 mt-2">
+              {components.map((comp, idx) => (
+                <div key={idx} className="flex items-center gap-2 p-3 rounded-2xl border border-warm-200 bg-warm-50">
+                  <select value={comp.flourType}
+                    onChange={e => {
+                      const ft = e.target.value as FlourType;
+                      updateComponent(idx, { flourType: ft, label: flourLabel(ft) });
+                    }}
+                    className="flex-1 text-[13px] bg-white border border-warm-200 rounded-lg px-2 py-1.5">
+                    {FLOUR_TYPE_OPTIONS.map(o => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-1">
+                    <input type="number" min={0} max={100} value={comp.percentage}
+                      onChange={e => updateComponent(idx, { percentage: Number(e.target.value) })}
+                      className="w-16 text-center text-[13px] bg-white border border-warm-200 rounded-lg px-2 py-1.5" />
+                    <span className="text-[12px] text-warm-400">%</span>
+                  </div>
+                  {components.length > 1 && (
+                    <button onClick={() => removeComponent(idx)}
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100">
+                      <XIcon className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button onClick={addComponent}
+              className="mt-2 w-full py-2 rounded-xl border-2 border-dashed border-warm-300 text-warm-500 text-[13px] font-medium hover:border-bread-300 hover:text-bread-500 transition-all">
+              + Meelsoort toevoegen
+            </button>
+            {totalPct !== 100 && (
+              <p className="text-[12px] text-red-500 mt-1 font-medium">
+                Totaal: {totalPct}% (moet 100% zijn)
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-warm-200">
+          <button onClick={() => onSave({ name, description, style: 'Eigen mengsel', components, suggestedHydration })}
+            disabled={!isValid}
+            className="w-full min-h-[48px] rounded-2xl bg-gradient-to-r from-bread-400 to-bread-500 text-white font-bold text-[15px] shadow-[var(--shadow-button)] disabled:opacity-40">
+            Opslaan
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==================== MAIN WIZARD ====================
+
 export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) => void }) {
   const { dispatch } = useBread();
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState<RecipeConfig>(presetRecipes[1]);
   const [showMenu, setShowMenu] = useState(false);
 
+  // Custom recipes & blends
+  const { customRecipes, addRecipe, deleteRecipe } = useCustomRecipes();
+  const { customBlends, addBlend, deleteBlend } = useCustomBlends();
+  const [showRecipeModal, setShowRecipeModal] = useState(false);
+  const [showBlendModal, setShowBlendModal] = useState(false);
+  const [editingBlend, setEditingBlend] = useState<FlourBlend | undefined>(undefined);
+
+  const allBlends = [...presetBlends, ...customBlends];
+
   const update = (partial: Partial<RecipeConfig>) =>
     setConfig(prev => ({ ...prev, ...partial }));
 
-  const selectedBlend = presetBlends.find(b => b.id === config.flourBlendId);
+  const selectedBlend = allBlends.find(b => b.id === config.flourBlendId);
   const waterTemp = calculateWaterTemperature(config.targetDDT, config.roomTempC, estimateFlourTemp(config.roomTempC), 6, config.roomTempC);
   const timeline = calculateProcessTimeline(config);
   const totalMinutes = timeline.reduce((sum, s) => sum + s.calculatedDurationMs / 60000, 0);
@@ -64,9 +328,9 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
   const stepTitles = ['Recept', 'Hoeveelheid', 'Meelmengsel', 'Starter', 'Instelling', 'Samenvatting'];
 
   const steps = [
-    // ========== STEP 0: RECEPT — Square tiles ==========
+    // ========== STEP 0: RECEPT -- Square tiles ==========
     <div key="recept" className="space-y-5">
-      <Hint>Kies een recept als vertrekpunt. Alles is daarna aanpasbaar.</Hint>
+      <Hint>Kies een recept als vertrekpunt, of maak een eigen recept.</Hint>
       <div className="grid grid-cols-2 gap-4">
         {recipeCards.map((rc) => {
           const recipe = presetRecipes[rc.index];
@@ -98,10 +362,59 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
             </button>
           );
         })}
+
+        {/* Custom recipes */}
+        {customRecipes.map((cr) => {
+          const isSelected = config.name === cr.name;
+          return (
+            <div key={cr.customId} className="relative">
+              <button
+                onClick={() => { setConfig(cr); setStep(1); }}
+                className={`w-full rounded-3xl border-2 p-5 text-left transition-all min-h-[170px] flex flex-col justify-between ${
+                  isSelected
+                    ? 'border-bread-400 bg-bread-50 shadow-md'
+                    : 'border-warm-200 bg-white hover:shadow-md hover:border-warm-300'
+                }`}>
+                {isSelected && (
+                  <div className="absolute top-3 right-3 w-6 h-6 bg-bread-400 rounded-full flex items-center justify-center">
+                    <CheckIcon className="w-3.5 h-3.5 text-white" />
+                  </div>
+                )}
+                <div>
+                  <div className="mb-2"><BreadIcon className="w-7 h-7 text-bread-400" /></div>
+                  <div className="font-bold text-warm-800 text-[15px] leading-tight">{cr.name}</div>
+                  <div className="text-warm-400 text-[12px] mt-1 leading-snug">
+                    {cr.route === 'koud' ? 'Koude rijs' : 'Warm'} &middot; {cr.hydrationPercent}% hydratie
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1 mt-3">
+                  <span className="text-[10px] bg-bread-100 text-bread-600 px-1.5 py-0.5 rounded-md font-medium">Eigen</span>
+                </div>
+              </button>
+              {/* Delete button */}
+              <button
+                onClick={(e) => { e.stopPropagation(); deleteRecipe(cr.customId); }}
+                className="absolute top-2 left-2 w-6 h-6 bg-red-50 rounded-full flex items-center justify-center border border-red-200 hover:bg-red-100 z-10">
+                <XIcon className="w-3 h-3 text-red-400" />
+              </button>
+            </div>
+          );
+        })}
+
+        {/* "Eigen recept" tile */}
+        <button
+          onClick={() => setShowRecipeModal(true)}
+          className="rounded-3xl border-2 border-dashed border-warm-300 p-5 text-left transition-all min-h-[170px] flex flex-col items-center justify-center hover:border-bread-400 hover:bg-bread-50/30">
+          <div className="w-12 h-12 rounded-2xl bg-warm-100 flex items-center justify-center mb-3">
+            <span className="text-2xl text-warm-400">+</span>
+          </div>
+          <div className="font-bold text-warm-500 text-[14px]">Eigen recept</div>
+          <div className="text-warm-400 text-[11px] mt-1 text-center">Maak een recept op maat</div>
+        </button>
       </div>
     </div>,
 
-    // ========== STEP 1: HOEVEELHEID — Bread count/weight ==========
+    // ========== STEP 1: HOEVEELHEID -- Bread count/weight ==========
     <div key="hoeveel" className="space-y-5">
       <Hint>Hoeveel brood wil je bakken? Het meelgewicht wordt automatisch berekend.</Hint>
       <div className="space-y-3.5">
@@ -139,45 +452,68 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
     // ========== STEP 2: MEELMENGSEL ==========
     <div key="blend" className="space-y-4">
       <Hint>
-        Kies de samenstelling van je meel. Het <strong>T-nummer</strong> is de maalgraad:
+        Kies de samenstelling van je meel, of maak een eigen mengsel. Het <strong>T-nummer</strong> is de maalgraad:
         hoe hoger, hoe meer zemelen en smaak. T65 = wit, T80 = halfgrof, T150 = volkoren.
       </Hint>
       <div className="space-y-3">
-        {presetBlends.map((blend) => {
+        {allBlends.map((blend) => {
           const isSelected = config.flourBlendId === blend.id;
+          const isCustom = 'isCustom' in blend && (blend as CustomBlend).isCustom;
           return (
-            <button key={blend.id} onClick={() => selectBlend(blend)}
-              className={`w-full rounded-3xl border-2 p-5 text-left transition-all ${
-                isSelected
-                  ? 'border-bread-400 bg-bread-50 shadow-md'
-                  : 'border-warm-200 bg-white hover:shadow-md'
-              }`}>
-              <div className="flex items-start justify-between">
-                <div className="font-bold text-warm-800 text-[15px]">{blend.name}</div>
+            <div key={blend.id} className="relative">
+              <button onClick={() => selectBlend(blend)}
+                className={`w-full rounded-3xl border-2 p-5 text-left transition-all ${
+                  isSelected
+                    ? 'border-bread-400 bg-bread-50 shadow-md'
+                    : 'border-warm-200 bg-white hover:shadow-md'
+                }`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-warm-800 text-[15px]">{blend.name}</span>
+                    {isCustom && (
+                      <span className="text-[10px] bg-bread-100 text-bread-600 px-1.5 py-0.5 rounded-md font-medium">Eigen</span>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <div className="w-6 h-6 bg-bread-400 rounded-full flex items-center justify-center flex-shrink-0 ml-2">
+                      <CheckIcon className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  )}
+                </div>
+                <div className="text-warm-400 mt-1 text-[13px] leading-snug">{blend.description}</div>
+                {blend.notes && <div className="text-olive-500 mt-1 text-[12px] italic">{blend.notes}</div>}
                 {isSelected && (
-                  <div className="w-6 h-6 bg-bread-400 rounded-full flex items-center justify-center flex-shrink-0 ml-2">
-                    <CheckIcon className="w-3.5 h-3.5 text-white" />
+                  <div className="mt-2 pt-2 border-t border-bread-200 text-[12px] text-bread-700">
+                    {calculateBlendAmounts(blend, config.totalFlourGrams).map(a => `${a.grams}g ${a.label}`).join(' + ')}
                   </div>
                 )}
-              </div>
-              <div className="text-warm-400 mt-1 text-[13px] leading-snug">{blend.description}</div>
-              {blend.notes && <div className="text-olive-500 mt-1 text-[12px] italic">{blend.notes}</div>}
-              {isSelected && (
-                <div className="mt-2 pt-2 border-t border-bread-200 text-[12px] text-bread-700">
-                  {calculateBlendAmounts(blend, config.totalFlourGrams).map(a => `${a.grams}g ${a.label}`).join(' + ')}
-                </div>
+              </button>
+              {/* Delete button for custom blends */}
+              {isCustom && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); deleteBlend(blend.id); }}
+                  className="absolute top-3 right-14 w-6 h-6 bg-red-50 rounded-full flex items-center justify-center border border-red-200 hover:bg-red-100 z-10">
+                  <XIcon className="w-3 h-3 text-red-400" />
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
+
+      {/* "Eigen mengsel" button */}
+      <button
+        onClick={() => { setEditingBlend(undefined); setShowBlendModal(true); }}
+        className="w-full py-4 rounded-3xl border-2 border-dashed border-warm-300 text-warm-500 font-bold text-[14px] hover:border-bread-400 hover:text-bread-500 hover:bg-bread-50/30 transition-all">
+        + Eigen mengsel maken
+      </button>
     </div>,
 
-    // ========== STEP 3: STARTER — With explanations + grams ==========
+    // ========== STEP 3: STARTER -- With explanations + grams ==========
     <div key="starter" className="space-y-6">
       <Hint>
         Je starter (desem/moederdeeg) is de motor van het proces. De <strong>sterkte</strong> bepaalt
-        hoe actief de gisten en bacteriën zijn — en dus hoe snel je deeg rijst.
+        hoe actief de gisten en bacteriën zijn -- en dus hoe snel je deeg rijst.
       </Hint>
       <div>
         <Label>Hoe actief is je starter nu?</Label>
@@ -257,7 +593,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
     </div>,
 
-    // ========== STEP 4: INSTELLING — Route, temp, hydration with WHY ==========
+    // ========== STEP 4: INSTELLING -- Route, temp, hydration with WHY ==========
     <div key="instelling" className="space-y-6">
       <div>
         <Label>Rijsmethode</Label>
@@ -338,7 +674,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
     </div>,
 
-    // ========== STEP 5: SAMENVATTING — Visual ==========
+    // ========== STEP 5: SAMENVATTING -- Visual ==========
     <div key="summary" className="space-y-4">
       {/* Hero */}
       <div className="rounded-3xl bg-gradient-to-br from-olive-500 to-olive-700 p-7 text-white">
@@ -365,7 +701,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
         </div>
       </div>
 
-      {/* Ingredients — visual */}
+      {/* Ingredients -- visual */}
       <div className="rounded-3xl border-2 border-warm-200 bg-white p-6">
         <div className="text-[11px] text-warm-400 uppercase tracking-wider font-bold mb-3">Ingrediënten</div>
         <div className="space-y-3">
@@ -530,11 +866,62 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
           </div>
         </div>
       </div>
+
+      {/* Recipe edit modal */}
+      {showRecipeModal && (
+        <RecipeEditModal
+          initial={{
+            name: '',
+            route: 'koud',
+            hydrationPercent: 72,
+            starterPercent: 20,
+            starterStrength: 'sterk',
+            feedingRatio: '1:5:5',
+            saltPercent: 2,
+            flourType: 'T65',
+            flourBlendId: 't65-rogge-90-10',
+            roomTempC: 22,
+            targetDDT: 23,
+            totalFlourGrams: 500,
+          }}
+          allBlends={allBlends}
+          onSave={(recipe) => {
+            const custom = addRecipe(recipe);
+            setConfig(custom);
+            setShowRecipeModal(false);
+            setStep(1);
+          }}
+          onCancel={() => setShowRecipeModal(false)}
+        />
+      )}
+
+      {/* Blend edit modal */}
+      {showBlendModal && (
+        <BlendEditModal
+          initial={editingBlend}
+          onSave={(blend) => {
+            const custom = addBlend(blend);
+            selectBlend(custom);
+            setShowBlendModal(false);
+            setEditingBlend(undefined);
+          }}
+          onCancel={() => { setShowBlendModal(false); setEditingBlend(undefined); }}
+        />
+      )}
     </div>
   );
 }
 
 // === Helper components ===
+
+function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-warm-700 font-bold text-[13px] mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-warm-800 font-bold text-[15px]">{children}</label>;

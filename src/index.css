@@ -230,4 +230,38 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  /* Form field inputs for modals */
+  .field-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid var(--color-warm-200);
+    background: white;
+    font-size: 14px;
+    color: var(--color-warm-800);
+    transition: border-color 0.15s ease;
+  }
+  .field-input:focus {
+    border-color: var(--color-bread-400);
+    box-shadow: 0 0 0 3px rgba(250,183,85,0.2);
+    outline: none;
+  }
+  .field-input::placeholder {
+    color: var(--color-warm-400);
+  }
+}
+
+/* Slide-up animation for modals */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
 }

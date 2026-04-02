@@ -1,16 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FAB755"/>
-      <stop offset="100%" stop-color="#C6822A"/>
-    </linearGradient>
-    <linearGradient id="crust" x1="0.3" y1="0" x2="0.7" y2="1">
-      <stop offset="0%" stop-color="#C6822A"/>
-      <stop offset="100%" stop-color="#9A6220"/>
-    </linearGradient>
+    <radialGradient id="b" cx="0.45" cy="0.4" r="0.55">
+      <stop offset="0%" stop-color="#F5DEB3"/>
+      <stop offset="60%" stop-color="#D4A55A"/>
+      <stop offset="100%" stop-color="#8B6324"/>
+    </radialGradient>
   </defs>
-  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
-  <ellipse cx="256" cy="280" rx="145" ry="120" fill="#FFF8EB" stroke="url(#crust)" stroke-width="8"/>
-  <path d="M120 260 Q256 130 392 260" fill="url(#crust)" opacity="0.9"/>
-  <path d="M190 215 Q256 175 322 215" fill="none" stroke="#6E4518" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="16" cy="16" r="14" fill="url(#b)"/>
+  <line x1="16" y1="4" x2="16" y2="28" stroke="#6E4518" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="4" y1="16" x2="28" y2="16" stroke="#6E4518" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="7.5" y1="7.5" x2="24.5" y2="24.5" stroke="#6E4518" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+  <line x1="24.5" y1="7.5" x2="7.5" y2="24.5" stroke="#6E4518" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
 </svg>
