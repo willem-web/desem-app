@@ -8,12 +8,16 @@ import { BakeComplete } from '@/components/feedback/BakeComplete';
 import { HistoryView } from '@/components/feedback/HistoryView';
 import { AdvisorPanel } from '@/components/advisor/AdvisorPanel';
 import { InventoryPanel } from '@/components/inventory/InventoryPanel';
+import { LandingPage } from '@/components/landing/LandingPage';
 
 export type Overlay = 'none' | 'history' | 'advisor' | 'inventory';
 
 function AppContent() {
   const { state } = useBread();
   const [overlay, setOverlay] = useState<Overlay>('none');
+  const [hasSeenLanding, setHasSeenLanding] = useState(
+    () => localStorage.getItem('desem_seen_landing') === '1'
+  );
 
   // Overlays — accessible from everywhere
   if (overlay === 'history') {
@@ -44,6 +48,14 @@ function AppContent() {
   // Process just completed
   if (state.process && state.process.isComplete) {
     return <BakeComplete />;
+  }
+
+  // Landing page — first visit only
+  if (!hasSeenLanding) {
+    return <LandingPage onStart={() => {
+      localStorage.setItem('desem_seen_landing', '1');
+      setHasSeenLanding(true);
+    }} />;
   }
 
   // Default: setup
