@@ -6,30 +6,36 @@ import { calculateWaterTemperature, estimateFlourTemp } from '@/models/temperatu
 import { calculateProcessTimeline } from '@/models/stages';
 import { useBread } from '@/context/BreadContext';
 import type { Overlay } from '@/App';
+import {
+  WheatIcon, MoonIcon, LayersIcon, MountainIcon, LeafIcon, GrainIcon,
+  SunIcon, ThermometerIcon, BreadIcon, MicheIcon, DoubleBreadIcon,
+  CheckIcon, MoreIcon,
+} from '@/components/ui/Icons';
 
 // Enriched recipe display data
 const recipeCards: Array<{
-  index: number; emoji: string; title: string; subtitle: string;
+  index: number; icon: React.ReactNode; title: string; subtitle: string;
   tags: string[]; time: string;
 }> = [
-  { index: 0, emoji: '🌾', title: 'Landbrood', subtitle: 'Klassiek Frans, licht rogge-accent. Snelle warme methode.', tags: ['Beginner', 'Snel'], time: '~10u' },
-  { index: 1, emoji: '🌙', title: 'Landbrood Nacht', subtitle: 'Zelfde recept, koude nacht-rijs. Diepere smaak.', tags: ['Populair', 'Complex'], time: '~20u' },
-  { index: 2, emoji: '🎨', title: 'Drievoudig', subtitle: 'Drie meelsoorten: rijk, mineraalrijk, nootachtig.', tags: ['Gevorderd', 'Smaak'], time: '~20u' },
-  { index: 3, emoji: '🏔️', title: 'Groot Brood', subtitle: 'Stevig, nootachtig brood. Jouw signature 50/40/10.', tags: ['1kg meel', 'Karakter'], time: '~20u' },
-  { index: 4, emoji: '🌿', title: 'Spelt-Tarwe', subtitle: 'Nootachtig speltkarakter. Teer, luchtig kruim.', tags: ['Licht', 'Nootachtig'], time: '~20u' },
-  { index: 5, emoji: '🌰', title: 'Volkoren', subtitle: 'Stevig volkorenbrood. Voedzaam, vol smaak.', tags: ['Gezond', 'Stevig'], time: '~20u' },
+  { index: 0, icon: <WheatIcon className="w-7 h-7 text-bread-500" />, title: 'Landbrood', subtitle: 'Klassiek Frans, licht rogge-accent. Snelle warme methode.', tags: ['Beginner', 'Snel'], time: '~10u' },
+  { index: 1, icon: <MoonIcon className="w-7 h-7 text-lav-500" />, title: 'Landbrood Nacht', subtitle: 'Zelfde recept, koude nacht-rijs. Diepere smaak.', tags: ['Populair', 'Complex'], time: '~20u' },
+  { index: 2, icon: <LayersIcon className="w-7 h-7 text-olive-500" />, title: 'Drievoudig', subtitle: 'Drie meelsoorten: rijk, mineraalrijk, nootachtig.', tags: ['Gevorderd', 'Smaak'], time: '~20u' },
+  { index: 3, icon: <MountainIcon className="w-7 h-7 text-warm-500" />, title: 'Groot Brood', subtitle: 'Stevig, nootachtig brood. Jouw signature 50/40/10.', tags: ['1kg meel', 'Karakter'], time: '~20u' },
+  { index: 4, icon: <LeafIcon className="w-7 h-7 text-emerald-500" />, title: 'Spelt-Tarwe', subtitle: 'Nootachtig speltkarakter. Teer, luchtig kruim.', tags: ['Licht', 'Nootachtig'], time: '~20u' },
+  { index: 5, icon: <GrainIcon className="w-7 h-7 text-bread-700" />, title: 'Volkoren', subtitle: 'Stevig volkorenbrood. Voedzaam, vol smaak.', tags: ['Gezond', 'Stevig'], time: '~20u' },
 ];
 
-const breadSizes = [
-  { label: '1 brood', desc: 'Standaard rond brood (~800g)', flourGrams: 500, icon: '🍞' },
-  { label: '1 groot brood', desc: 'Miche-formaat (~1.2kg)', flourGrams: 750, icon: '🥖' },
-  { label: '2 broden', desc: 'Twee broden of batards (~1.6kg)', flourGrams: 1000, icon: '🍞🍞' },
+const breadSizes: Array<{ label: string; desc: string; flourGrams: number; icon: React.ReactNode }> = [
+  { label: '1 brood', desc: 'Standaard rond brood (~800g)', flourGrams: 500, icon: <BreadIcon className="w-8 h-8 text-bread-500" /> },
+  { label: '1 groot brood', desc: 'Miche-formaat (~1.2kg)', flourGrams: 750, icon: <MicheIcon className="w-8 h-8 text-bread-600" /> },
+  { label: '2 broden', desc: 'Twee broden of batards (~1.6kg)', flourGrams: 1000, icon: <DoubleBreadIcon className="w-8 h-8 text-bread-700" /> },
 ];
 
 export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) => void }) {
   const { dispatch } = useBread();
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState<RecipeConfig>(presetRecipes[1]);
+  const [showMenu, setShowMenu] = useState(false);
 
   const update = (partial: Partial<RecipeConfig>) =>
     setConfig(prev => ({ ...prev, ...partial }));
@@ -61,25 +67,25 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
     // ========== STEP 0: RECEPT — Square tiles ==========
     <div key="recept" className="space-y-5">
       <Hint>Kies een recept als vertrekpunt. Alles is daarna aanpasbaar.</Hint>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {recipeCards.map((rc) => {
           const recipe = presetRecipes[rc.index];
           const isSelected = config.name === recipe.name;
           return (
             <button key={rc.index}
               onClick={() => { setConfig(recipe); setStep(1); }}
-              className={`relative rounded-2xl border-2 p-4 text-left transition-all min-h-[160px] flex flex-col justify-between ${
+              className={`relative rounded-3xl border-2 p-5 text-left transition-all min-h-[170px] flex flex-col justify-between ${
                 isSelected
                   ? 'border-bread-400 bg-bread-50 shadow-md'
                   : 'border-warm-200 bg-white hover:shadow-md hover:border-warm-300'
               }`}>
               {isSelected && (
                 <div className="absolute top-3 right-3 w-6 h-6 bg-bread-400 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">&#10003;</span>
+                  <CheckIcon className="w-3.5 h-3.5 text-white" />
                 </div>
               )}
               <div>
-                <div className="text-2xl mb-2">{rc.emoji}</div>
+                <div className="mb-2">{rc.icon}</div>
                 <div className="font-bold text-warm-800 text-[15px] leading-tight">{rc.title}</div>
                 <div className="text-warm-400 text-[12px] mt-1 leading-snug">{rc.subtitle}</div>
               </div>
@@ -98,18 +104,18 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
     // ========== STEP 1: HOEVEELHEID — Bread count/weight ==========
     <div key="hoeveel" className="space-y-5">
       <Hint>Hoeveel brood wil je bakken? Het meelgewicht wordt automatisch berekend.</Hint>
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {breadSizes.map((size) => {
           const isSelected = config.totalFlourGrams === size.flourGrams;
           return (
             <button key={size.flourGrams}
               onClick={() => update({ totalFlourGrams: size.flourGrams })}
-              className={`w-full rounded-2xl border-2 p-5 text-left transition-all flex items-center gap-4 ${
+              className={`w-full rounded-3xl border-2 p-6 text-left transition-all flex items-center gap-4 ${
                 isSelected
                   ? 'border-bread-400 bg-bread-50 shadow-md'
                   : 'border-warm-200 bg-white hover:shadow-md'
               }`}>
-              <div className="text-3xl">{size.icon}</div>
+              <div className="flex-shrink-0">{size.icon}</div>
               <div className="flex-1">
                 <div className="font-bold text-warm-800 text-[16px]">{size.label}</div>
                 <div className="text-warm-400 text-[13px] mt-0.5">{size.desc}</div>
@@ -117,7 +123,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
               </div>
               {isSelected && (
                 <div className="w-7 h-7 bg-bread-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-sm">&#10003;</span>
+                  <CheckIcon className="w-4 h-4 text-white" />
                 </div>
               )}
             </button>
@@ -136,12 +142,12 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
         Kies de samenstelling van je meel. Het <strong>T-nummer</strong> is de maalgraad:
         hoe hoger, hoe meer zemelen en smaak. T65 = wit, T80 = halfgrof, T150 = volkoren.
       </Hint>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {presetBlends.map((blend) => {
           const isSelected = config.flourBlendId === blend.id;
           return (
             <button key={blend.id} onClick={() => selectBlend(blend)}
-              className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${
+              className={`w-full rounded-3xl border-2 p-5 text-left transition-all ${
                 isSelected
                   ? 'border-bread-400 bg-bread-50 shadow-md'
                   : 'border-warm-200 bg-white hover:shadow-md'
@@ -150,7 +156,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
                 <div className="font-bold text-warm-800 text-[15px]">{blend.name}</div>
                 {isSelected && (
                   <div className="w-6 h-6 bg-bread-400 rounded-full flex items-center justify-center flex-shrink-0 ml-2">
-                    <span className="text-white text-xs">&#10003;</span>
+                    <CheckIcon className="w-3.5 h-3.5 text-white" />
                   </div>
                 )}
               </div>
@@ -175,7 +181,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </Hint>
       <div>
         <Label>Hoe actief is je starter nu?</Label>
-        <div className="grid grid-cols-2 gap-3 mt-3">
+        <div className="grid grid-cols-2 gap-4 mt-3">
           {([
             ['zwak', 'Zwak', 'Nauwelijks gerezen, weinig bellen', 'Pas gevoerd of lang niet gebruikt'],
             ['gemiddeld', 'Gemiddeld', 'Iets gerezen, wat bellen zichtbaar', 'Een paar uur na voeren'],
@@ -185,14 +191,14 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
             const isSelected = config.starterStrength === value;
             return (
               <button key={value} onClick={() => update({ starterStrength: value as StarterStrength })}
-                className={`rounded-2xl border-2 p-4 text-left transition-all ${
+                className={`rounded-3xl border-2 p-5 text-left transition-all ${
                   isSelected
                     ? 'border-bread-400 bg-bread-50 shadow-md'
                     : 'border-warm-200 bg-white hover:shadow-md'
                 }`}>
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-warm-800 text-[15px]">{label}</span>
-                  {isSelected && <span className="text-bread-500">&#10003;</span>}
+                  {isSelected && <CheckIcon className="w-4 h-4 text-bread-500" />}
                 </div>
                 <div className="text-warm-400 text-[12px] mt-1 leading-snug">{desc}</div>
                 <div className="text-olive-500 text-[11px] mt-1 italic">{when}</div>
@@ -256,28 +262,35 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       <div>
         <Label>Rijsmethode</Label>
         <Hint>Dit bepaalt het smaakprofiel van je brood en hoeveel tijd je nodig hebt.</Hint>
-        <div className="grid grid-cols-1 gap-3 mt-3">
+        <div className="grid grid-cols-1 gap-3.5 mt-3">
           {([
-            ['warm', '☀️', 'Warme rijs', 'Rijst op kamertemperatuur. Sneller klaar, milder zuurprofiel met meer melkzuur.',
+            ['warm', 'sun', 'Warme rijs', 'Rijst op kamertemperatuur. Sneller klaar, milder zuurprofiel met meer melkzuur.',
              'Ideaal als je dezelfde dag wilt bakken.'],
-            ['koud', '🌙', 'Koude nacht-rijs', 'Gaat na vormen 8-16u de koelkast in. Meer azijnzuur, dieper, complexer aroma.',
+            ['koud', 'moon', 'Koude nacht-rijs', 'Gaat na vormen 8-16u de koelkast in. Meer azijnzuur, dieper, complexer aroma.',
              'Start overdag, bak de volgende ochtend.'],
-          ] as const).map(([value, icon, label, desc, when]) => {
+          ] as const).map(([value, iconType, label, desc, when]) => {
             const isSelected = config.route === value;
             return (
               <button key={value}
                 onClick={() => update({ route: value as ProcessRoute, targetDDT: value === 'warm' ? 26 : 23 })}
-                className={`w-full rounded-2xl border-2 p-5 text-left transition-all ${
+                className={`w-full rounded-3xl border-2 p-6 text-left transition-all ${
                   isSelected
                     ? 'border-bread-400 bg-bread-50 shadow-md'
                     : 'border-warm-200 bg-white hover:shadow-md'
                 }`}>
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl mt-0.5">{icon}</span>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    iconType === 'sun' ? 'bg-bread-100' : 'bg-lav-100'
+                  }`}>
+                    {iconType === 'sun'
+                      ? <SunIcon className="w-5 h-5 text-bread-500" />
+                      : <MoonIcon className="w-5 h-5 text-lav-500" />
+                    }
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-warm-800 text-[16px]">{label}</span>
-                      {isSelected && <span className="text-bread-500 text-lg">&#10003;</span>}
+                      {isSelected && <CheckIcon className="w-5 h-5 text-bread-500" />}
                     </div>
                     <div className="text-warm-500 text-[13px] mt-1 leading-snug">{desc}</div>
                     <div className="text-olive-500 text-[12px] mt-1 italic">{when}</div>
@@ -300,8 +313,10 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
 
       {/* Water temp result */}
-      <div className="rounded-2xl border-2 border-lav-200 bg-lav-50 p-5 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-lav-200 flex items-center justify-center text-xl flex-shrink-0">&#127777;</div>
+      <div className="rounded-3xl border-2 border-lav-200 bg-lav-50 p-6 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-lav-200 flex items-center justify-center flex-shrink-0">
+          <ThermometerIcon className="w-6 h-6 text-lav-600" />
+        </div>
         <div>
           <div className="text-lav-600 text-[12px] font-medium">Aanbevolen watertemperatuur</div>
           <div className="text-3xl font-bold text-lav-700">{Math.round(waterTemp)}°C</div>
@@ -326,7 +341,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
     // ========== STEP 5: SAMENVATTING — Visual ==========
     <div key="summary" className="space-y-4">
       {/* Hero */}
-      <div className="rounded-2xl bg-gradient-to-br from-olive-500 to-olive-700 p-6 text-white">
+      <div className="rounded-3xl bg-gradient-to-br from-olive-500 to-olive-700 p-7 text-white">
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="text-olive-200 text-[12px] font-medium uppercase tracking-wider">Klaar om te bakken</div>
@@ -338,7 +353,12 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <SummaryPill>{config.route === 'koud' ? '🌙 Koude rijs' : '☀️ Warm'}</SummaryPill>
+          <SummaryPill>
+            {config.route === 'koud'
+              ? <><MoonIcon className="w-3.5 h-3.5 inline -mt-0.5 mr-1" /> Koude rijs</>
+              : <><SunIcon className="w-3.5 h-3.5 inline -mt-0.5 mr-1" /> Warm</>
+            }
+          </SummaryPill>
           <SummaryPill>{config.hydrationPercent}% hydratie</SummaryPill>
           <SummaryPill>{config.roomTempC}°C</SummaryPill>
           <SummaryPill>{timeline.length} stappen</SummaryPill>
@@ -346,7 +366,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
 
       {/* Ingredients — visual */}
-      <div className="rounded-2xl border-2 border-warm-200 bg-white p-5">
+      <div className="rounded-3xl border-2 border-warm-200 bg-white p-6">
         <div className="text-[11px] text-warm-400 uppercase tracking-wider font-bold mb-3">Ingrediënten</div>
         <div className="space-y-3">
           {/* Flour */}
@@ -395,7 +415,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
 
       {/* Settings compact */}
-      <div className="rounded-2xl border-2 border-warm-200 bg-white p-5">
+      <div className="rounded-3xl border-2 border-warm-200 bg-white p-6">
         <div className="text-[11px] text-warm-400 uppercase tracking-wider font-bold mb-3">Instellingen</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           <SettingRow label="Mengsel" value={selectedBlend?.name ?? config.flourType} />
@@ -406,7 +426,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
       </div>
 
       {/* Timeline visual */}
-      <div className="rounded-2xl border-2 border-warm-200 bg-white p-5">
+      <div className="rounded-3xl border-2 border-warm-200 bg-white p-6">
         <div className="text-[11px] text-warm-400 uppercase tracking-wider font-bold mb-3">Tijdlijn</div>
         <div className="space-y-0">
           {timeline.map((stage, i) => {
@@ -415,8 +435,8 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
             const m = min % 60;
             const isLong = min >= 60;
             return (
-              <div key={stage.id} className="flex items-center gap-3 py-2 border-b border-warm-100 last:border-0">
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${
+              <div key={stage.id} className="flex items-center gap-3 py-2.5 border-b border-warm-100 last:border-0">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${
                   isLong ? 'bg-olive-100 text-olive-700' : 'bg-warm-100 text-warm-500'
                 }`}>{i + 1}</div>
                 <span className="text-warm-700 text-[14px] flex-1">{stage.name}</span>
@@ -435,23 +455,32 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
     <div className="flex flex-col min-h-dvh bg-warm-50">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-warm-50/95 backdrop-blur-xl border-b border-warm-200/60 safe-top">
-        <div className="px-5 pt-4 pb-3">
+        <div className="px-6 pt-5 pb-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <span className="text-2xl">&#127838;</span>
+              <BreadIcon className="w-7 h-7 text-bread-500" />
               <span className="text-xl font-bold text-warm-800">Desem</span>
             </div>
-            <div className="flex gap-2">
-              {([
-                ['Advies', 'advisor'],
-                ['Voorraad', 'inventory'],
-                ['Log', 'history'],
-              ] as const).map(([label, key]) => (
-                <button key={key} onClick={() => onNavigate?.(key as Overlay)}
-                  className="px-3 py-1.5 bg-white border border-warm-200 rounded-xl text-[12px] font-semibold text-warm-500 hover:border-bread-300 transition-all">
-                  {label}
-                </button>
-              ))}
+            <div className="relative">
+              <button onClick={() => setShowMenu(!showMenu)}
+                className="w-9 h-9 flex items-center justify-center bg-white border border-warm-200 rounded-xl text-warm-500 hover:border-bread-300 transition-all shadow-sm">
+                <MoreIcon className="w-5 h-5" />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 top-11 bg-white border border-warm-200 rounded-2xl shadow-[var(--shadow-elevated)] py-2 min-w-[160px] z-30">
+                  {([
+                    ['Bakadvies', 'advisor'],
+                    ['Voorraad', 'inventory'],
+                    ['Baklogboek', 'history'],
+                  ] as const).map(([label, key]) => (
+                    <button key={key}
+                      onClick={() => { setShowMenu(false); onNavigate?.(key as Overlay); }}
+                      className="w-full text-left px-4 py-2.5 text-[14px] text-warm-600 hover:bg-bread-50 transition-colors">
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           {/* Step indicator */}
@@ -468,15 +497,18 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
         </div>
       </div>
 
+      {/* Dismiss menu overlay */}
+      {showMenu && <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />}
+
       {/* Content */}
-      <div className="flex-1 px-5 pt-4" style={{ paddingBottom: '200px' }}>
+      <div className="flex-1 px-6 pt-5" style={{ paddingBottom: '200px' }}>
         <h2 className="text-[22px] font-bold text-warm-800 mb-3">{stepTitles[step]}</h2>
         {steps[step]}
       </div>
 
       {/* Bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20 safe-bottom">
-        <div className="max-w-[430px] mx-auto px-5 py-4 bg-warm-50/95 backdrop-blur-xl border-t border-warm-200/60">
+        <div className="max-w-[430px] mx-auto px-6 py-5 bg-warm-50/95 backdrop-blur-xl border-t border-warm-200/60">
           <div className="flex gap-3">
             {step > 0 && (
               <button onClick={() => setStep(step - 1)}
@@ -492,7 +524,7 @@ export function SetupWizard({ onNavigate }: { onNavigate?: (overlay: Overlay) =>
             ) : (
               <button onClick={startProcess}
                 className="flex-1 min-h-[56px] rounded-2xl bg-gradient-to-r from-bread-400 to-bread-500 text-white font-bold text-[18px] shadow-[var(--shadow-elevated)]">
-                &#127838; Start Bakproces
+                <BreadIcon className="w-5 h-5 inline -mt-0.5 mr-1" /> Start Bakproces
               </button>
             )}
           </div>
@@ -514,7 +546,7 @@ function Hint({ children }: { children: React.ReactNode }) {
 
 function InfoCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-olive-50 border border-olive-200 p-4 text-[13px] text-olive-700 leading-relaxed">
+    <div className="rounded-3xl bg-olive-50 border border-olive-200 p-5 text-[13px] text-olive-700 leading-relaxed">
       {children}
     </div>
   );

@@ -5,6 +5,7 @@ import { getStageDefinition } from '@/models/stages';
 import { scienceContent } from '@/data/scienceContent';
 import { getStepRecipeInfo } from '@/data/stepRecipeInfo';
 import { useState, useEffect } from 'react';
+import { BreadIcon, CheckIcon, XIcon, WarningIcon, MicroscopeIcon, FlaskIcon, ChevronDownIcon, ThermometerIcon } from '@/components/ui/Icons';
 
 export function StepCard() {
   const { process, currentStage, currentEndTime, dispatch } = useBread();
@@ -30,7 +31,7 @@ export function StepCard() {
   if (!process || !currentStage) {
     return (
       <div className="text-center py-20 px-8">
-        <div className="text-6xl mb-6">&#127838;</div>
+        <BreadIcon className="w-16 h-16 text-bread-400 mx-auto mb-6" />
         <div className="text-2xl font-bold text-warm-800 mb-2">Klaar!</div>
         <div className="text-warm-400 leading-relaxed">Je bakproces is voltooid.<br />Geniet van je brood!</div>
       </div>
@@ -54,7 +55,7 @@ export function StepCard() {
   return (
     <div className="flex flex-col">
       {/* Timer hero */}
-      <div className={`bg-gradient-to-br ${timerGradient} text-white px-6 py-7 relative overflow-hidden`}>
+      <div className={`bg-gradient-to-br ${timerGradient} text-white px-7 py-8 relative overflow-hidden`}>
         {/* Step counter — larger, more prominent */}
         <div className="flex items-center justify-between mb-1">
           <div className="text-white/90 text-[15px] font-semibold">{definition.name}</div>
@@ -77,7 +78,7 @@ export function StepCard() {
       </div>
 
       {/* Scrollable content */}
-      <div className="px-5 py-4 space-y-4 pb-28">
+      <div className="px-6 py-5 space-y-4 pb-32">
 
         {/* Recipe info */}
         {recipeInfo && (
@@ -85,7 +86,9 @@ export function StepCard() {
             {recipeInfo.temperature && (
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-bread-200 flex items-center justify-center text-lg">&#127777;</div>
+                  <div className="w-10 h-10 rounded-2xl bg-bread-200 flex items-center justify-center">
+                    <ThermometerIcon className="w-5 h-5 text-bread-600" />
+                  </div>
                   <div>
                     <div className="text-[11px] text-bread-600 font-medium">{recipeInfo.temperature.label}</div>
                     <div className="text-xl font-bold text-bread-800">{recipeInfo.temperature.value}</div>
@@ -162,7 +165,7 @@ export function StepCard() {
           <ul className="space-y-2">
             {definition.expectedProperties.map((prop, i) => (
               <li key={i} className="flex gap-2.5 text-[13px] text-warm-600">
-                <span className="text-emerald-500 flex-shrink-0">&#10003;</span>
+                <CheckIcon className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                 {prop}
               </li>
             ))}
@@ -173,24 +176,26 @@ export function StepCard() {
         {definition.physicalTest && (
           <div className="card bg-lav-50 border-lav-200">
             <div className="flex items-center gap-2.5 mb-2">
-              <div className="w-7 h-7 rounded-lg bg-lav-200 flex items-center justify-center text-sm">&#128300;</div>
+              <div className="w-7 h-7 rounded-lg bg-lav-200 flex items-center justify-center">
+                <MicroscopeIcon className="w-4 h-4 text-lav-700" />
+              </div>
               <h3 className="font-semibold text-lav-700 text-[14px]">{definition.physicalTest.name}</h3>
             </div>
             <p className="text-[13px] text-lav-600 mb-3 leading-relaxed">{definition.physicalTest.description}</p>
             <div className="space-y-1.5">
               {definition.physicalTest.outcomes.underfermented && (
                 <div className="flex gap-2.5 p-2.5 rounded-xl bg-red-50/60 border border-red-100">
-                  <span className="text-red-400 text-[12px]">&#10007;</span>
+                  <XIcon className="w-3 h-3 text-red-400 flex-shrink-0 mt-0.5" />
                   <span className="text-[12px] text-warm-600 leading-relaxed">{definition.physicalTest.outcomes.underfermented}</span>
                 </div>
               )}
               <div className="flex gap-2.5 p-2.5 rounded-xl bg-green-50 border border-green-200">
-                <span className="text-green-500 text-[12px]">&#10003;</span>
+                <CheckIcon className="w-3 h-3 text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-[12px] text-warm-800 font-medium leading-relaxed">{definition.physicalTest.outcomes.optimal}</span>
               </div>
               {definition.physicalTest.outcomes.overfermented && (
                 <div className="flex gap-2.5 p-2.5 rounded-xl bg-orange-50/60 border border-orange-100">
-                  <span className="text-orange-400 text-[12px]">&#9888;</span>
+                  <WarningIcon className="w-3 h-3 text-orange-400 flex-shrink-0 mt-0.5" />
                   <span className="text-[12px] text-warm-600 leading-relaxed">{definition.physicalTest.outcomes.overfermented}</span>
                 </div>
               )}
@@ -204,10 +209,10 @@ export function StepCard() {
             className="card w-full text-left hover:shadow-[var(--shadow-card-hover)] transition-all">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span>&#129514;</span>
+                <FlaskIcon className="w-4 h-4 text-warm-600" />
                 <h3 className="font-semibold text-warm-700 text-[14px]">De Wetenschap</h3>
               </div>
-              <span className={`text-warm-400 text-[12px] transition-transform duration-200 ${showScience ? 'rotate-180' : ''}`}>&#9660;</span>
+              <ChevronDownIcon className={`w-4 h-4 text-warm-400 transition-transform duration-200 ${showScience ? 'rotate-180' : ''}`} />
             </div>
             {showScience && (
               <div className="mt-3 space-y-2" onClick={e => e.stopPropagation()}>
@@ -229,7 +234,7 @@ export function StepCard() {
 
       {/* Sticky next button — always visible */}
       <div className="fixed bottom-0 left-0 right-0 z-20 safe-bottom">
-        <div className="max-w-[430px] mx-auto px-5 py-3 bg-warm-50/90 backdrop-blur-xl border-t border-warm-200/60">
+        <div className="max-w-[430px] mx-auto px-6 py-5 bg-warm-50/90 backdrop-blur-xl border-t border-warm-200/60">
           <button onClick={handleNextStep}
             className={`w-full py-3.5 rounded-2xl font-bold text-[16px] transition-all shadow-[var(--shadow-button)] ${
               timer.isComplete

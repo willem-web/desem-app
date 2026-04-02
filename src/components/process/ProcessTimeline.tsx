@@ -1,5 +1,6 @@
 import { useBread } from '@/context/BreadContext';
 import { useEffect, useRef } from 'react';
+import { CheckIcon, ClockIcon } from '@/components/ui/Icons';
 
 export function ProcessTimeline() {
   const { process } = useBread();
@@ -32,7 +33,7 @@ export function ProcessTimeline() {
             <div
               key={stage.id}
               ref={isCurrent ? activeRef : undefined}
-              className={`relative flex items-start gap-4 py-3.5 px-2 rounded-2xl transition-all ${
+              className={`relative flex items-start gap-4 py-4 px-3 rounded-3xl transition-all ${
                 isCurrent ? 'bg-bread-50' : ''
               } ${isComplete ? 'opacity-50' : ''}`}
             >
@@ -40,7 +41,7 @@ export function ProcessTimeline() {
               <div className="relative z-10 flex-shrink-0 mt-0.5">
                 {isComplete ? (
                   <div className="w-[38px] h-[38px] rounded-full bg-emerald-500 flex items-center justify-center shadow-sm">
-                    <span className="text-white text-sm">&#10003;</span>
+                    <CheckIcon className="w-4 h-4 text-white" />
                   </div>
                 ) : isCurrent ? (
                   <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-bread-300 to-bread-400 flex items-center justify-center shadow-md shadow-bread-200 animate-pulse">
@@ -68,7 +69,7 @@ export function ProcessTimeline() {
                   </span>
                 </div>
                 <div className="text-[13px] text-warm-400 mt-0.5 flex items-center gap-1.5">
-                  <span className="text-warm-300">&#128339;</span>
+                  <ClockIcon className="w-3.5 h-3.5 text-warm-300" />
                   <span>start {timeStr}</span>
                   {isCurrent && <span className="ml-1 text-bread-500 font-semibold bg-bread-50 px-2 py-0.5 rounded-lg text-[11px]">Nu actief</span>}
                 </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { BakeScore, BakeScores } from '@/types';
 import { useBread } from '@/context/BreadContext';
 import { useHistory } from '@/context/HistoryContext';
+import { BreadIcon } from '@/components/ui/Icons';
 
 const scoreLabels: Record<BakeScore, string> = {
   1: 'Slecht',
@@ -58,7 +59,7 @@ export function BakeComplete() {
     return (
       <div className="p-6 space-y-5">
         <div className="text-center py-10">
-          <div className="text-5xl mb-5">&#127838;</div>
+          <BreadIcon className="w-14 h-14 text-bread-400 mx-auto mb-5" />
           <h2 className="text-2xl font-bold text-warm-800">Opgeslagen!</h2>
           <p className="text-warm-400 mt-3 leading-relaxed">Je baksessie is opgeslagen in je baklogboek.</p>
         </div>
@@ -89,7 +90,7 @@ export function BakeComplete() {
   return (
     <div className="p-6 space-y-5">
       <div className="text-center py-6">
-        <div className="text-4xl mb-3">&#127838;</div>
+        <BreadIcon className="w-10 h-10 text-bread-400 mx-auto mb-3" />
         <h2 className="text-2xl font-bold text-warm-800">Bakproces voltooid!</h2>
         <p className="text-warm-400 mt-2">Beoordeel je resultaat voor je baklogboek.</p>
       </div>

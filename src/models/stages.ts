@@ -266,6 +266,29 @@ export const stageDefinitions: StageDefinition[] = [
  * Calculates the complete process timeline from a recipe config.
  * Returns an array of ActiveStage objects with calculated durations and start times.
  */
+/**
+ * If a timestamp falls between 22:00 and 06:00, push it forward to 06:00.
+ * This prevents active baking steps from being scheduled during night hours.
+ */
+function pushPastNightHours(timestamp: number): number {
+  const d = new Date(timestamp);
+  const hour = d.getHours();
+  if (hour >= 22) {
+    // Push to 06:00 next day
+    const next = new Date(d);
+    next.setDate(next.getDate() + 1);
+    next.setHours(6, 0, 0, 0);
+    return next.getTime();
+  }
+  if (hour < 6) {
+    // Push to 06:00 same day
+    const morning = new Date(d);
+    morning.setHours(6, 0, 0, 0);
+    return morning.getTime();
+  }
+  return timestamp;
+}
+
 export function calculateProcessTimeline(config: RecipeConfig): ActiveStage[] {
   const stages: ActiveStage[] = [];
   let currentTime = Date.now();
@@ -297,6 +320,13 @@ export function calculateProcessTimeline(config: RecipeConfig): ActiveStage[] {
     }
 
     const durationMs = Math.round(durationMinutes * 60 * 1000);
+
+    // Night hours constraint: no active steps between 22:00-06:00
+    // Passive steps (cold rise, levain fermentation) are allowed overnight
+    const passiveStages: StageId[] = ['koude_rijs', 'levain'];
+    if (!passiveStages.includes(def.id)) {
+      currentTime = pushPastNightHours(currentTime);
+    }
 
     stages.push({
       id: def.id,

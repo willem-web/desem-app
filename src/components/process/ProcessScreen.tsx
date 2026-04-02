@@ -5,6 +5,7 @@ import { StepCard } from './StepCard';
 import { StepCharts } from '@/components/charts/StepCharts';
 import type { ProcessTab } from '@/types';
 import type { Overlay } from '@/App';
+import { BreadIcon, MoreIcon } from '@/components/ui/Icons';
 
 export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) => void }) {
   const { process, totalProgress, dispatch } = useBread();
@@ -25,10 +26,10 @@ export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) 
     <div className="flex flex-col min-h-dvh">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60">
-        <div className="px-5 pt-3 pb-0">
+        <div className="px-6 pt-4 pb-0">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
-              <span className="text-lg">&#127838;</span>
+              <BreadIcon className="w-6 h-6 text-bread-500" />
               <span className="text-lg font-bold text-warm-800">Desem</span>
               <span className="text-[13px] text-warm-400 font-mono bg-white border border-warm-200 px-2 py-0.5 rounded-lg ml-1">
                 {completedSteps}/{process.stages.length}
@@ -39,7 +40,7 @@ export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) 
               <div className="relative">
                 <button onClick={() => setShowMenu(!showMenu)}
                   className="w-9 h-9 flex items-center justify-center bg-white border border-warm-200 rounded-xl text-warm-500 hover:border-bread-300 transition-all shadow-sm text-[16px]">
-                  &#8943;
+                  <MoreIcon className="w-5 h-5" />
                 </button>
                 {showMenu && (
                   <div className="absolute right-0 top-11 bg-white border border-warm-200 rounded-2xl shadow-[var(--shadow-elevated)] py-2 min-w-[160px] z-30">
@@ -76,7 +77,7 @@ export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) 
           <div className="flex -mb-px">
             {tabs.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
-                className={`flex-1 py-2.5 text-[13px] font-semibold border-b-2 transition-all ${
+                className={`flex-1 py-3.5 text-[13px] font-semibold border-b-2 transition-all ${
                   tab === t.id ? 'border-bread-400 text-warm-800' : 'border-transparent text-warm-400'
                 }`}>
                 {t.label}
@@ -91,9 +92,9 @@ export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) 
 
       {/* Content */}
       <div className="flex-1">
-        {tab === 'tijdlijn' && <div className="px-5 py-4"><ProcessTimeline /></div>}
+        {tab === 'tijdlijn' && <div className="px-6 py-5"><ProcessTimeline /></div>}
         {tab === 'stap' && <StepCard />}
-        {tab === 'grafieken' && <div className="px-5 py-4"><StepCharts /></div>}
+        {tab === 'grafieken' && <div className="px-6 py-5"><StepCharts /></div>}
       </div>
     </div>
   );
