@@ -25,7 +25,7 @@ export function ProcessScreen({ onNavigate }: { onNavigate?: (overlay: Overlay) 
   return (
     <div className="flex flex-col min-h-dvh">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60">
+      <div className="sticky top-0 z-20 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 safe-top">
         <div className="px-6 pt-4 pb-0">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">

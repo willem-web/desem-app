@@ -29,12 +29,12 @@ export function InventoryPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="min-h-dvh bg-warm-50">
-      <div className="sticky top-0 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 px-5 py-4 z-10 flex items-center justify-between">
+      <div className="sticky top-0 bg-warm-50/90 backdrop-blur-xl border-b border-warm-200/60 px-6 py-4 z-10 flex items-center justify-between safe-top">
         <div className="text-lg font-bold text-warm-800">Voorraad</div>
         <button onClick={onClose} className="text-[13px] text-warm-400 font-medium">Sluiten</button>
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-6 space-y-5">
         {/* Low stock warning */}
         {lowStock.length > 0 && (
           <div className="card bg-red-50 border-red-100">

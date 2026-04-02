@@ -20,7 +20,7 @@ export function HistoryView() {
   const avgOverall = history.reduce((sum, r) => sum + r.scores.overall, 0) / history.length;
 
   return (
-    <div className="p-5 space-y-5">
+    <div className="p-6 space-y-5">
       <h2 className="text-2xl font-bold text-warm-800">Baklogboek</h2>
 
       {/* Stats */}
